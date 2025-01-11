@@ -21,7 +21,8 @@ function App() {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/learning" element={<Learning />} />
-              <Route path="/learn/:id" element={<ChapterView />} />
+              <Route path="/learning/:courseId" element={<Learning />} />
+              <Route path="/learning/:courseId/:chapterId" element={<ChapterView />} />
               <Route path="/recommendation" element={<Recommendation />} />
               <Route path="/news" element={<News />} />
               <Route path="/portfolio" element={<Portfolio />} />

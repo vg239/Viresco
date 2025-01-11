@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
@@ -7,6 +7,9 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkGfm from 'remark-gfm';
 import { BookOpen, Clock, Award, CheckCircle2, XCircle } from 'lucide-react';
+import { useCourseStore } from '@/store/courseStore';
+import { elevenLabsAPI } from '@/lib/elevenlabs';
+import { useEffect, useRef } from 'react';
 
 interface ChapterState {
   title: string;
@@ -17,6 +20,7 @@ interface ChapterState {
 const ChapterView = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { courseId } = useParams();
   const { title, content, questions } = location.state as ChapterState || {
     title: '',
     content: '',
@@ -26,6 +30,16 @@ const ChapterView = () => {
   const [answers, setAnswers] = React.useState<string[]>([]);
   const [submitted, setSubmitted] = React.useState(false);
   const [activeSection, setActiveSection] = React.useState<'content' | 'quiz'>('content');
+
+  const { getCurrentCourse } = useCourseStore();
+  const widgetContainerRef = useRef<HTMLDivElement>(null);
+  const currentCourse = getCurrentCourse();
+
+  useEffect(() => {
+    if (currentCourse?.agentId && widgetContainerRef.current) {
+      widgetContainerRef.current.innerHTML = elevenLabsAPI.getAgentWidget(currentCourse.agentId);
+    }
+  }, [currentCourse?.agentId]);
 
   const handleAnswerChange = (index: number, value: string) => {
     const newAnswers = [...answers];
@@ -52,11 +66,11 @@ const ChapterView = () => {
           >
             <div className="flex justify-between items-center mb-6">
               <Button 
-                onClick={() => navigate('/learning')} 
+                onClick={() => navigate(`/learning/${courseId}`)} 
                 variant="outline"
                 className="text-black"
               >
-                ← Back to Lessons
+                ← Back to Course
               </Button>
               <div className="flex gap-4">
                 <Button
@@ -202,6 +216,14 @@ const ChapterView = () => {
           )}
         </div>
       </div>
+
+      {/* AI Tutor Widget */}
+      {currentCourse?.agentId && (
+        <div 
+          ref={widgetContainerRef}
+          className="fixed bottom-8 right-8 z-50"
+        />
+      )}
     </div>
   );
 };

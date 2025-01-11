@@ -6,8 +6,9 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Loader from './LoadingHamster';
 import { learnAPI } from '@/lib/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useCourseStore } from '@/store/courseStore';
+import { elevenLabsAPI } from '@/lib/elevenlabs';
 
 const lessons = [
   {
@@ -126,10 +127,27 @@ const LessonCard = ({ lesson, index, onClick }: { lesson: any, index: number, on
 export default function Learning() {
   const [anonAadhaar] = useAnonAadhaar();
   const [isLoading, setIsLoading] = useState(false);
+  const [isCreatingAgent, setIsCreatingAgent] = useState(false);
   const [query, setQuery] = useState('');
-  const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { courseData, setCourseData } = useCourseStore();
+  const { courseId } = useParams();
+  const { 
+    courses, 
+    currentCourseId, 
+    addCourse, 
+    updateCourseAgent,
+    setCurrentCourse,
+    getCurrentCourse,
+    clearCurrentCourse 
+  } = useCourseStore();
+
+  useEffect(() => {
+    if (courseId) {
+      setCurrentCourse(courseId);
+    } else {
+      clearCurrentCourse();
+    }
+  }, [courseId, setCurrentCourse, clearCurrentCourse]);
 
   useEffect(() => {
     if (anonAadhaar?.status !== "logged-in") {
@@ -146,7 +164,35 @@ export default function Learning() {
     try {
       setIsLoading(true);
       const response = await learnAPI.generateCourse(query);
-      setCourseData(response);
+      
+      // Format the query for the URL
+      const formattedQuery = query.toLowerCase().replace(/\s+/g, '_');
+      
+      // First add the course without agent ID
+      addCourse(query, response);
+      
+      // Then create the ElevenLabs agent
+      setIsCreatingAgent(true);
+      try {
+        const agentId = await elevenLabsAPI.createAgent(query, {
+          syllabus: response.syllabus,
+          chapters: response.chapters
+        });
+        
+        if (agentId) {
+          updateCourseAgent(formattedQuery, agentId);
+          toast.success("AI tutor created successfully!");
+        } else {
+          throw new Error('No agent ID received');
+        }
+      } catch (error) {
+        console.error('Failed to create AI tutor:', error);
+        toast.error(error instanceof Error ? error.message : "Failed to create AI tutor");
+      } finally {
+        setIsCreatingAgent(false);
+      }
+
+      navigate(`/learning/${formattedQuery}`);
     } catch (error) {
       toast.error("Failed to generate course");
       console.error(error);
@@ -156,19 +202,40 @@ export default function Learning() {
   };
 
   const handleChapterClick = (chapterKey: string) => {
-    if (!courseData) return;
+    const currentCourse = getCurrentCourse();
+    if (!currentCourse || !courseId) return;
     
-    navigate(`/learn/${chapterKey.replace('chapter', '')}`, {
+    navigate(`/learning/${courseId}/${chapterKey.replace('chapter', '')}`, {
       state: { 
-        title: courseData.syllabus[chapterKey],
-        content: courseData.chapters[chapterKey], 
-        questions: courseData.questions[chapterKey]?.split('\n').filter(q => q.trim()) || []
+        title: currentCourse.data.syllabus[chapterKey],
+        content: currentCourse.data.chapters[chapterKey], 
+        questions: currentCourse.data.questions[chapterKey]?.split('\n').filter(q => q.trim()) || []
       }
     });
   };
 
+  const currentCourse = getCurrentCourse();
+
   return (
     <div className="min-h-screen bg-gray-50/50 pt-24">
+      {(isLoading || isCreatingAgent) && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="bg-white rounded-2xl p-8 shadow-lg max-w-md w-full mx-4">
+            <div className="flex flex-col items-center text-center">
+              <Loader />
+              <h3 className="text-xl font-bold text-black mt-4">
+                {isLoading ? "Generating your course..." : "Creating your AI tutor..."}
+              </h3>
+              <p className="text-black/60 mt-2">
+                {isLoading 
+                  ? "This might take a minute. We're crafting a personalized learning experience for you." 
+                  : "We're setting up an AI tutor to help you with your learning journey."}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="max-w-4xl mx-auto text-center mb-16">
@@ -190,105 +257,145 @@ export default function Learning() {
           </motion.p>
         </div>
 
-        {selectedLesson ? (
+        {/* Course Generation Section - Always visible on /learning */}
+        {!courseId && anonAadhaar?.status === "logged-in" && (
           <>
-            {/* Course Generation Section */}
-            {anonAadhaar?.status === "logged-in" && (
-              <div className="max-w-3xl mx-auto mb-16">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="bg-white rounded-2xl p-8 shadow-sm border"
-                >
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-2xl font-bold text-black">Generate Custom Chapter</h3>
-                    <Button 
-                      onClick={() => setSelectedLesson(null)}
-                      variant="outline"
-                      className="text-black"
-                    >
-                      ← Back to Lessons
-                    </Button>
+            <div className="max-w-3xl mx-auto mb-16">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="bg-white rounded-2xl p-8 shadow-sm border"
+              >
+                <h3 className="text-2xl font-bold text-black mb-6">Generate Custom Course</h3>
+                <div className="flex gap-4">
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="What would you like to learn about?"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 
+                               focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500
+                               text-black placeholder:text-black/40"
+                    />
+                    <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-black/40 w-5 h-5" />
                   </div>
-                  <div className="flex gap-4">
-                    <div className="relative flex-1">
-                      <input
-                        type="text"
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        placeholder="What would you like to learn about?"
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 
-                                focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500
-                                text-black placeholder:text-black/40"
-                      />
-                      <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-black/40 w-5 h-5" />
-                    </div>
-                    <Button 
-                      onClick={handleGenerateCourse} 
-                      disabled={isLoading}
-                      className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl text-lg font-medium
-                              transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-green-500/20"
-                    >
-                      Generate
-                    </Button>
-                  </div>
-                </motion.div>
-              </div>
-            )}
-
-            {/* Generated Chapters */}
-            <div className="max-w-7xl mx-auto">
-              {isLoading ? (
-                <div className="flex justify-center items-center min-h-[200px]">
-                  <Loader />
+                  <Button 
+                    onClick={handleGenerateCourse} 
+                    disabled={isLoading}
+                    className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl text-lg font-medium
+                             transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-green-500/20"
+                  >
+                    Generate
+                  </Button>
                 </div>
-              ) : (
+              </motion.div>
+            </div>
+
+            {/* Existing Courses */}
+            {courses.length > 0 && (
+              <div className="max-w-7xl mx-auto">
+                <h2 className="text-2xl font-bold text-black mb-8">Your Generated Courses</h2>
                 <div className="grid grid-cols-1 gap-8 mb-16">
-                  {courseData && Object.keys(courseData.syllabus).map((chapterKey, index) => (
+                  {courses.map((course, index) => (
                     <motion.div
-                      key={chapterKey}
+                      key={course.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: index * 0.1 }}
                       className="bg-white rounded-2xl p-8 shadow-sm border hover:shadow-lg hover:shadow-green-500/5 
                               transition-all duration-300 cursor-pointer"
-                      onClick={() => handleChapterClick(chapterKey)}
+                      onClick={() => navigate(`/learning/${course.id}`)}
                     >
-                      <div className="flex items-center gap-4 mb-4">
-                        <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600 font-bold">
-                          {index + 1}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-green-600">
+                            <BookOpen className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-bold text-black mb-1">
+                              {course.title}
+                            </h3>
+                            <div className="flex items-center gap-4">
+                              <p className="text-black/60">
+                                {Object.keys(course.data.chapters).length} Chapters
+                              </p>
+                              {course.agentId && (
+                                <span className="flex items-center gap-1 text-green-600 text-sm">
+                                  <Sparkles className="w-4 h-4" />
+                                  AI Tutor Available
+                                </span>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                        <h3 className="text-xl font-bold text-black">
-                          {courseData.syllabus[chapterKey]}
-                        </h3>
+                        <Button variant="ghost" className="text-green-600">
+                          Continue Learning →
+                        </Button>
                       </div>
-                      <p className="text-black/60 pl-14">
-                        {courseData.chapters[chapterKey].split('\n')[0]}...
-                      </p>
                     </motion.div>
                   ))}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </>
-        ) : (
-          /* Lessons Grid */
+        )}
+
+        {/* Generated Chapters - Only visible when courseId exists */}
+        {courseId && currentCourse && (
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 gap-8 mb-16">
-              {lessons.map((lesson, index) => (
-                <LessonCard
-                  key={lesson.id}
-                  lesson={lesson}
-                  index={index}
-                  onClick={() => setSelectedLesson(lesson.id)}
-                />
-              ))}
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-2xl font-bold text-black">
+                Course: {currentCourse.title}
+              </h2>
+              <Button 
+                onClick={() => {
+                  navigate('/learning');
+                  clearCurrentCourse();
+                }}
+                variant="outline"
+                className="text-black"
+              >
+                ← Back to Course Generator
+              </Button>
             </div>
+
+            {isLoading ? (
+              <div className="flex justify-center items-center min-h-[200px]">
+                <Loader />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-8 mb-16">
+                {Object.keys(currentCourse.data.syllabus).map((chapterKey, index) => (
+                  <motion.div
+                    key={chapterKey}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="bg-white rounded-2xl p-8 shadow-sm border hover:shadow-lg hover:shadow-green-500/5 
+                            transition-all duration-300 cursor-pointer"
+                    onClick={() => handleChapterClick(chapterKey)}
+                  >
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600 font-bold">
+                        {index + 1}
+                      </div>
+                      <h3 className="text-xl font-bold text-black">
+                        {currentCourse.data.syllabus[chapterKey]}
+                      </h3>
+                    </div>
+                    <p className="text-black/60 pl-14">
+                      {currentCourse.data.chapters[chapterKey].split('\n')[0]}...
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
-        {/* Learning Path */}
+        {/* Learning Path - Always visible */}
         <div className="max-w-3xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -309,7 +416,7 @@ export default function Learning() {
             </div>
             <div className="flex justify-between mt-2">
               <span className="text-sm text-black/60">Progress: 55%</span>
-              <span className="text-sm font-medium text-green-600">4/8 Courses</span>
+              <span className="text-sm font-medium text-green-600">{courses.length} Courses</span>
             </div>
           </motion.div>
         </div>
