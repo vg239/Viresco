@@ -311,22 +311,35 @@ export default function Dashboard() {
               viewport={{ once: true }}
               className="mt-12 flex justify-center gap-16 text-xl"
             >
-              <div className="flex items-start gap-3">
-                <span className="text-green-500 text-2xl">→</span>
-                <span>
-                  <strong className="text-2xl">5 Trees Planted</strong>
-                  <br />
+              <motion.div 
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                className="bg-white rounded-2xl p-8 shadow-sm border hover:shadow-lg hover:shadow-green-500/10 
+                         transition-all duration-300 w-[300px]"
+              >
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4">
+                    <LeafIcon className="w-8 h-8 text-green-500" />
+                  </div>
+                  <strong className="text-3xl font-bold text-black mb-2">5 Trees</strong>
                   <span className="text-black/60 font-light">Direct impact on global reforestation and carbon reduction</span>
-                </span>
-              </div>
-              <div className="flex items-start gap-3">
-                <span className="text-green-500 text-2xl">→</span>
-                <span>
-                  <strong className="text-2xl">73% Green Portfolio</strong>
-                  <br />
+                </div>
+              </motion.div>
+
+              <motion.div 
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                className="bg-white rounded-2xl p-8 shadow-sm border hover:shadow-lg hover:shadow-green-500/10 
+                         transition-all duration-300 w-[300px]"
+              >
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4">
+                    <LineChartIcon className="w-8 h-8 text-green-500" />
+                  </div>
+                  <strong className="text-3xl font-bold text-black mb-2">73% Green</strong>
                   <span className="text-black/60 font-light">Pioneering the shift towards sustainable financial markets</span>
-                </span>
-              </div>
+                </div>
+              </motion.div>
             </motion.div>
 
             <motion.div
