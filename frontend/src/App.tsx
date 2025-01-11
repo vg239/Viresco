@@ -2,12 +2,12 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AnonAadhaarProvider } from '@anon-aadhaar/react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Layout from './components/Layout';
-import Dashboard from './components/Dashboard';
-import Learning from './components/Learning';
-import Recommendation from './components/Recommendation';
-import News from './components/News';
-import Portfolio from './components/Portfolio';
+import Layout from './components/Layout.tsx';
+import Dashboard from './components/Dashboard.tsx';
+import Learning from './components/Learning.tsx';
+import Recommendation from './components/Recommendation.tsx';
+import News from './components/News.tsx';
+import Portfolio from './components/Portfolio.tsx';
 import './App.css';
 
 function App() {

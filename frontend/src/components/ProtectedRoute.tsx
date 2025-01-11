@@ -1,8 +1,13 @@
+import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAnonAadhaar } from "@anon-aadhaar/react";
 import { toast } from 'react-toastify';
 
-function ProtectedRoute({ children }) {
+interface ProtectedRouteProps {
+  children: ReactNode;
+}
+
+function ProtectedRoute({ children }: ProtectedRouteProps) {
   const [anonAadhaar] = useAnonAadhaar();
 
   if (anonAadhaar?.status !== "logged-in") {
@@ -10,8 +15,7 @@ function ProtectedRoute({ children }) {
     return <Navigate to="/" />;
   }
 
-  return children;
+  return <>{children}</>;
 }
 
-export default ProtectedRoute;
-
+export default ProtectedRoute; 

@@ -1,7 +1,12 @@
+import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useAnonAadhaar, LogInWithAnonAadhaar } from "@anon-aadhaar/react";
 
-function Layout({ children }) {
+interface LayoutProps {
+  children: ReactNode;
+}
+
+function Layout({ children }: LayoutProps) {
   const [anonAadhaar] = useAnonAadhaar();
 
   return (
@@ -39,5 +44,4 @@ function Layout({ children }) {
   );
 }
 
-export default Layout;
-
+export default Layout; 

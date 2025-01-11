@@ -1,13 +1,24 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-    "./anon_jsx/src/**/*.{js,jsx,ts,tsx}",
-    "./index.html"
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      animation: {
+        gradient: 'gradient 6s linear infinite',
+      },
+      backgroundSize: {
+        '300%': '300%',
+      },
+      keyframes: {
+        gradient: {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+        },
+      },
+    },
   },
   plugins: [],
-}
-
+} 
