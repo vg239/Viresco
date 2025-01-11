@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis/redis-stack:latest
+    ports:
+      - "6379:6379"
+      - "8001:8001"
+    volumes:
+      - redis_data:/data
+    environment:
+      - REDIS_PASSWORD=your_password_here  # Optional: Add if you want password protection
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  redis_data:
+
