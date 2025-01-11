@@ -9,7 +9,6 @@ router = APIRouter()
 reporter = NewsReporter()
 reporter.fetch_news(['^BSESN', "TCS.NS"])
 
-
 class Stocks(BaseModel):
     name: str
     quantity: int
