@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
 import { HomeIcon, BookOpenIcon, LineChartIcon, NewspaperIcon, WalletIcon, HeartIcon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAnonAadhaar, LogInWithAnonAadhaar } from "@anon-aadhaar/react";
+import { toast } from 'react-toastify';
 import { cn } from "@/lib/utils";
 import { Dock, DockIcon } from "@/components/ui/dock";
 import { ShimmerButton } from "@/components/magicui/shimmer-button";
@@ -25,6 +27,13 @@ const navItems = [
 export function Navbar() {
   const location = useLocation();
   const [anonAadhaar] = useAnonAadhaar();
+
+  useEffect(() => {
+    if (anonAadhaar?.status !== "logged-in") {
+      // You can add any logic here when user is not logged in
+      toast.info("Please log in with Anon Aadhaar to access all features");
+    }
+  }, [anonAadhaar?.status]);
 
   return (
     <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-sm">
@@ -68,7 +77,7 @@ export function Navbar() {
             <div className="h-9 flex items-center">
               <LogInWithAnonAadhaar 
                 nullifierSeed={1234} 
-                fieldsToReveal={["revealAgeAbove18"]}
+                fieldsToReveal={["revealAgeAbove18"]} 
               />
             </div>
           </div>
