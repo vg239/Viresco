@@ -69,7 +69,18 @@ export default {
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
   			}
-  		}
+  		},
+  		fontFamily: {
+  			'serif-primary': ['Playfair Display', 'serif'],
+  			'serif-primary-italic': ['Playfair Display', 'serif'],
+  		},
+  		fontSize: {
+  			'10xl': '10rem',
+  			'11xl': '12rem',
+  		},
+  		lineHeight: {
+  			'extra-tight': '1.1',
+  		},
   	}
   },
   plugins: [require("tailwindcss-animate")],
