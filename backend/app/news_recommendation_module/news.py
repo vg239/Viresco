@@ -67,6 +67,15 @@ class NewsReporter:
             f"Portfolio details:\n{json.dumps(self.portfolio, indent=2)}\n\n"
             f"Considering the user's portfolio allocation and goals, how might the latest news impact their holdings? "
             f"Provide actionable insights and suggest potential strategies the user could adopt."
+            "The structured news should be in the following format: \n"
+            "Portfolio Optimisation: <portfolio_optimisation>\n"
+            "ESG Oppurtunities: <Environmental, Social, and Governance._opportunities>\n"
+            "Market Trends: <market_trends>\n"
+            "Performance Analysis: <performance_analysis>\n"
+            "The portfolio optimisation should contain the current risk score and diversification score."
+            "The ESG oppurtunities should contain the current ESG score and the oppurtunities for improvement."
+            "The market trends should contain the current market trends and the oppurtunities for improvement."
+            "The performance analysis should contain the current return rate, current performance analysis and the oppurtunities for improvement."
         )
         run: RunResponse = self.agent.run(prompt)
         return run.content
@@ -77,10 +86,35 @@ class NewsReporter:
         :return: AI-generated news summary as a string.
         """
         prompt = (
-            f"The following is the latest news data:\n{json.dumps(self.news_data, indent=2)}\n\n"
-            "Summarize the news by structuring it clearly under each index, highlighting key points, and adding any "
-            "relevant context or implications for investors."
+            f"The following is the latest news: {json.dumps(self.news_data, indent=2)}. Your task is to summarize the top 6 news items overall. "
+            "Follow these instructions carefully:\n\n"
+            
+            "1. **Summary Style**:\n"
+            "   - Use professional and concise language.\n"
+            "   - Highlight key points, providing sufficient detail to make the context and implications clear.\n"
+            "   - Avoid vague statements or unnecessary filler words.\n"
+            "   - Ensure each summary is detailed and not overly brief.\n\n"
+            
+            "2. **Structured Format**: Present each news item in the following format:\n"
+            "   Headline: <headline>\n"
+            "   Content: <detailed and elaborate summary>\n"
+            "   Link: <source link>\n\n"
+            
+            "3. **Context & Implications**: Where applicable, include additional context to explain why the news matters, "
+            "potential effects on industries, companies, or markets, and any relevant background or recent developments.\n\n"
+            
+            "4. **Exclusions**: Do not include:\n"
+            "   - Duplicate or repetitive news items.\n"
+            "   - Irrelevant information not tied to significant trends or events.\n"
+            "   - Any indexing or numbering from the original data provided.\n\n"
+            
+            "5. **Edge Case Handling**:\n"
+            "   - If fewer than 6 news items are available, summarize only the ones provided.\n"
+            "   - If a link is missing, omit the 'Link' field for that specific news item.\n\n"
+            
+            "Carefully review the provided data and ensure your structured summary adheres to these guidelines."
         )
+
         run: RunResponse = self.agent.run(prompt)
         return run.content
 
