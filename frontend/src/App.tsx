@@ -8,6 +8,7 @@ import Learning from '@/components/Learning';
 import Recommendation from '@/components/Recommendation';
 import News from '@/components/News';
 import Portfolio from '@/components/Portfolio';
+import PortfolioView from '@/components/PortfolioView';
 import Watchlist from '@/components/Watchlist';
 import ChapterView from '@/components/ChapterView';
 
@@ -23,8 +24,10 @@ function App() {
               <Route path="/learning" element={<Learning />} />
               <Route path="/recommendation" element={<Recommendation />} />
               <Route path="/news" element={<News />} />
-              <Route path="/portfolio" element={<Portfolio />} />
               <Route path="/watchlist" element={<Watchlist />} />
+              <Route path="/portfolio/view" element={<PortfolioView />} />
+              <Route path="/portfolio/create" element={<Portfolio />} />
+              <Route path="/portfolio" element={<Portfolio />} />
             </Routes>
           </main>
         </div>

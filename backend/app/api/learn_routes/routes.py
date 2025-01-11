@@ -31,7 +31,7 @@ async def learn(request: LearnRequest):
     return LearnResponse(syllabus=syllabus, chapters=chapters, questions=questions)
 
 @router.post("/evaluate")
-async def evaluate(response: AnswerRequest):
-    scores = Learner.get_scores(response.Set, response.chapter)
-    summary = Learner.get_eval(response.Set, response.chapter)
+async def evaluate(request: AnswerRequest):
+    scores = Learner.get_scores(request.Set, request.chapter)
+    summary = Learner.get_eval(request.Set, request.chapter)
     return AnswerResponse(Scores=scores, Evaluation=summary)
