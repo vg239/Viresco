@@ -10,8 +10,8 @@ function Layout({ children }: LayoutProps) {
   const [anonAadhaar] = useAnonAadhaar();
 
   return (
-    <div className="w-full">
-      <header className="fixed top-0 w-full bg-[#1C1C1C] border-b border-gray-800">
+    <div className="min-h-screen">
+      <header className="fixed top-0 w-full bg-[#1C1C1C] border-b border-gray-800 z-50">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center h-16">
             <nav className="flex items-center space-x-8">
@@ -37,7 +37,7 @@ function Layout({ children }: LayoutProps) {
           </div>
         </div>
       </header>
-      <main className="w-screen h-screen flex items-center justify-center">
+      <main className="pt-16">
         {children}
       </main>
     </div>

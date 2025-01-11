@@ -27,7 +27,7 @@ class CourseBuilder:
             "Your job is to design a comprehensive course outline that is thoroughly organized and progresses logically from basic to advanced concepts. "
             "The course should be broken down into chapters, with each chapter representing a small, manageable section of content that can fit on approximately one page. "
             "Ensure the following guidelines are adhered to when creating the course plan:" 
-            "\n1. The total number of chapters must be between 5 and 10, inclusive." 
+            "\n1. The total number of chapters must be 5." 
             "\n2. Each chapter should focus on a specific topic, and the topics should collectively cover the entire scope of the course in a systematic and cohesive manner." 
             "\n3. Begin with foundational topics to build a strong base and gradually move toward more complex or advanced material." 
             "\n4. Use clear and concise phrasing for chapter titles to ensure their purpose is immediately understood." 

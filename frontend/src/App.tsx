@@ -8,6 +8,8 @@ import Learning from './components/Learning.tsx';
 import Recommendation from './components/Recommendation.tsx';
 import News from './components/News.tsx';
 import Portfolio from './components/Portfolio.tsx';
+import ChapterView from './components/ChapterView';
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
 function App() {
@@ -21,6 +23,14 @@ function App() {
             <Route path="/recommendation" element={<Recommendation />} />
             <Route path="/news" element={<News />} />
             <Route path="/portfolio" element={<Portfolio />} />
+            <Route 
+              path="/learn/:id" 
+              element={
+                
+                  <ChapterView />
+                
+              } 
+            />
           </Routes>
         </Layout>
         <ToastContainer
