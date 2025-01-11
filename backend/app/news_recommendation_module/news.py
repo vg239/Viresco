@@ -4,6 +4,8 @@ from phi.agent import Agent, RunResponse
 from phi.model.google import Gemini
 import os
 from dotenv import load_dotenv
+import pandas as pd
+from fuzzywuzzy import process  # Import fuzzywuzzy's process module
 
 # Load environment variables
 load_dotenv()
@@ -14,6 +16,31 @@ class NewsReporter:
         self.agent = Agent(
             model=Gemini(id="gemini-2.0-flash-exp", api_key=os.getenv("GEMINI_API_KEY"))
         )
+        self.guide = {
+            "Stocks": [
+                {"name": "Reliance Industries", "ticker": "RELIANCE.NS"},
+                {"name": "Tata Consultancy Services", "ticker": "TCS.NS"},
+                {"name": "HDFC Bank", "ticker": "HDFCBANK.NS"},
+                {"name": "Infosys", "ticker": "INFY.NS"},
+                {"name": "ICICI Bank", "ticker": "ICICIBANK.NS"},
+                {"name": "Bharti Airtel", "ticker": "BHARTIARTL.NS"},
+                {"name": "Larsen & Toubro", "ticker": "LT.NS"},
+                {"name": "Axis Bank", "ticker": "AXISBANK.NS"},
+                {"name": "Hindustan Unilever", "ticker": "HINDUNILVR.NS"},
+                {"name": "State Bank of India", "ticker": "SBIN.NS"},
+                {"name": "Maruti Suzuki", "ticker": "MARUTI.NS"},
+                {"name": "Kotak Mahindra Bank", "ticker": "KOTAKBANK.NS"},
+                {"name": "Wipro", "ticker": "WIPRO.NS"},
+                {"name": "ITC Limited", "ticker": "ITC.NS"},
+                {"name": "Asian Paints", "ticker": "ASIANPAINT.NS"},
+                {"name": "Tata Steel", "ticker": "TATASTEEL.NS"},
+                {"name": "UltraTech Cement", "ticker": "ULTRACEMCO.NS"},
+                {"name": "Bajaj Finance", "ticker": "BAJFINANCE.NS"},
+                {"name": "Tech Mahindra", "ticker": "TECHM.NS"},
+                {"name": "Mahindra & Mahindra", "ticker": "M&M.NS"},
+                {"name": "Sun Pharma", "ticker": "SUNPHARMA.NS"}
+            ]
+        }
 
     def set_portfolio(self, portfolio):
         """
@@ -28,7 +55,6 @@ class NewsReporter:
         :param indexes: List of ticker symbols for stock indexes
         :return: News data as a JSON object
         """
-
         for ticker_symbol in indexes:
             try:
                 ticker = yf.Ticker(ticker_symbol)
@@ -83,136 +109,68 @@ class NewsReporter:
         )
         run: RunResponse = self.agent.run(prompt)
         return run.content
-
-
-# Example usage
-if __name__ == "__main__":
-    portfolio = {
-        "investor": {
-            "name": "Rajesh Kumar",
-            "age": 34,
-            "email": "rajesh.kumar@example.com",
-            "contact": "+91-9876543210",
-            "city": "Bangalore",
-            "investment_profile": {
-                "risk_tolerance": "Moderate",
-                "investment_goal": "Long-term wealth creation",
-                "time_horizon": "10+ years"
-            }
-        },
-        "portfolio": {
-            "stocks": [
-                {
-                    "symbol": "RELIANCE",
-                    "name": "Reliance Industries Ltd",
-                    "quantity": 50,
-                    "average_buy_price": 2400.00,
-                    "current_price": 2480.00,
-                    "allocation_percentage": 25,
-                    "sector": "Energy",
-                    "investment_value": 120000.00,
-                    "current_value": 124000.00
-                },
-                {
-                    "symbol": "INFY",
-                    "name": "Infosys Ltd",
-                    "quantity": 30,
-                    "average_buy_price": 1450.00,
-                    "current_price": 1495.00,
-                    "allocation_percentage": 15,
-                    "sector": "Information Technology",
-                    "investment_value": 43500.00,
-                    "current_value": 44850.00
-                },
-                {
-                    "symbol": "HDFCBANK",
-                    "name": "HDFC Bank Ltd",
-                    "quantity": 40,
-                    "average_buy_price": 1600.00,
-                    "current_price": 1650.00,
-                    "allocation_percentage": 20,
-                    "sector": "Banking",
-                    "investment_value": 64000.00,
-                    "current_value": 66000.00
-                }
-            ],
-            "mutual_funds": [
-                {
-                    "scheme": "SBI Bluechip Fund",
-                    "investment_amount": 50000.00,
-                    "current_value": 54000.00,
-                    "allocation_percentage": 20,
-                    "type": "Equity Large Cap"
-                },
-                {
-                    "scheme": "Axis Midcap Fund",
-                    "investment_amount": 30000.00,
-                    "current_value": 33000.00,
-                    "allocation_percentage": 10,
-                    "type": "Equity Mid Cap"
-                }
-            ],
-            "fixed_deposits": [
-                {
-                    "bank_name": "State Bank of India",
-                    "investment_amount": 100000.00,
-                    "maturity_value": 120000.00,
-                    "tenure_years": 5,
-                    "interest_rate": 6.5,
-                    "allocation_percentage": 10
-                }
-            ],
-            "overall_summary": {
-                "total_investment_value": 387500.00,
-                "total_current_value": 411850.00,
-                "total_profit_loss": 24350.00,
-                "allocation": {
-                    "stocks": 60,
-                    "mutual_funds": 30,
-                    "fixed_deposits": 10
-                }
-            }
-        },
-        "recent_activities": [
-            {
-                "date": "2025-01-05",
-                "action": "Bought",
-                "asset_type": "Stock",
-                "symbol": "TCS",
-                "quantity": 10,
-                "price": 3500.00,
-                "remarks": "Long-term investment"
-            },
-            {
-                "date": "2025-01-02",
-                "action": "Sold",
-                "asset_type": "Stock",
-                "symbol": "ITC",
-                "quantity": 20,
-                "price": 300.00,
-                "remarks": "Profit booking"
-            },
-            {
-                "date": "2024-12-28",
-                "action": "Invested",
-                "asset_type": "Mutual Fund",
-                "scheme": "HDFC Flexi Cap Fund",
-                "amount": 20000.00,
-                "remarks": "Diversification"
-            }
-        ]
-    }
-
-    reporter = NewsReporter()
-    reporter.set_portfolio(portfolio)
-    reporter.fetch_news(['^BSESN', "TCS.NS"])
     
-    # Generate structured news summary
-    relevant_news = reporter.get_news()
-    print("Structured News Summary:")
-    print(relevant_news)
+    def get_price(self, ticker_symbol):
+        """
+        Fetches the current price of a stock using its ticker symbol.
+        :param ticker_symbol: Stock's ticker symbol
+        :return: Current stock price
+        """
+        stock = yf.Ticker(ticker_symbol)
+        current_price_info = stock.info.get("currentPrice")
+        return current_price_info
     
-    # Generate portfolio recommendations
-    recommendations = reporter.generate_recommendations()
-    print("\nPortfolio Recommendations:")
-    print(recommendations)
+    def get_stock_history(self, ticker_symbol):
+        """
+        Fetches the historical stock data for the past 1 month.
+        :param ticker_symbol: Stock's ticker symbol
+        :return: Historical data in plain string format without escape characters
+        """
+        stock = yf.Ticker(ticker_symbol)
+        data = stock.history(period="1mo")
+        
+        # Create a dictionary to store the history data
+        history_data = {}
+
+        # Iterate through each row to extract Date and corresponding Open, Close, High, Low
+        for index, row in data.iterrows():
+            history_data[str(index.date())] = {
+                "Open": row["Open"],
+                "Close": row["Close"],
+                "High": row["High"],
+                "Low": row["Low"]
+            }
+
+        # Convert dictionary to JSON string without indentation or newlines
+        json_data = json.dumps(history_data, separators=(',', ':' ))
+        
+        # Return the plain string without escape characters (already no escape characters)
+        return json_data
+
+
+    def update_portfolio_prices(self):
+        """
+        Updates the portfolio with the current price and stock history.
+        Iterates through the portfolio and fetches data from the guide.
+        :return: Updated portfolio with current prices and stock history
+        """
+        for stock in self.portfolio["Stocks"]:
+            stock_name = stock["name"]
+            
+            # Use fuzzy matching to find the best matching ticker
+            match = process.extractOne(stock_name, [item["name"] for item in self.guide["Stocks"]])
+            
+            if match and match[1] >= 80:  # Only accept matches with a high similarity score
+                # Get the corresponding ticker from the guide
+                ticker = next(item["ticker"] for item in self.guide["Stocks"] if item["name"] == match[0])
+                
+                # Fetch current price and stock history
+                current_price = self.get_price(ticker)
+                stock["current_price"] = current_price
+                
+                history = self.get_stock_history(ticker)
+                stock["history"] = history
+            else:
+                print(f"Unable to find a close match for {stock_name}.")
+        
+        return self.portfolio
