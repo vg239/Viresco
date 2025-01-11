@@ -7,7 +7,7 @@ function Dashboard() {
 
   useEffect(() => {
     if (anonAadhaar?.status !== "logged-in") {
-      toast.info("Please log in to access full features", { toastId: "login-prompt" });
+      // toast.info("Please log in to access full features", { toastId: "login-prompt" });
     }
   }, [anonAadhaar?.status]);
 

@@ -1,6 +1,7 @@
 import { useAnonAadhaar } from "@anon-aadhaar/react";
 import { toast } from 'react-toastify';
 import { useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 
 interface NewsItem {
   id: string;
@@ -23,7 +24,9 @@ function News() {
       <h2 className="text-3xl font-bold mb-6">News</h2>
       {anonAadhaar?.status === "logged-in" ? (
         <div className="grid gap-6">
-          <p className="text-xl text-gray-300">Stay updated with the latest news!</p>
+          <p className="text-xl text-gray-300">Stay updated with the latest news!
+          <Button>Click me</Button>
+          </p>
           {/* Add your news content here */}
         </div>
       ) : (
