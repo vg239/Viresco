@@ -6,6 +6,7 @@ import Recommendation from '@/components/Recommendation';
 import News from '@/components/News';
 import Portfolio from '@/components/Portfolio';
 import Watchlist from '@/components/Watchlist';
+import ChapterView from '@/components/ChapterView';
 
 function App() {
   return (
