@@ -1,6 +1,7 @@
 import time
 import random
 import json
+from typing import Dict
 from phi.agent import Agent, RunResponse
 from phi.model.google import Gemini
 import os
@@ -13,12 +14,14 @@ load_dotenv()
 
 class CourseBuilder:
 
-    def __init__(self, query):
-        self.query = query
+    def __init__(self):
         self.agent = Agent(
             model=Gemini(id="gemini-2.0-flash-exp", api_key=os.getenv("GEMINI_API_KEY"))
         )
         self.chapters = {}
+
+    def set_query(self, query):
+        self.query = query
 
     def PlanSyllabus(self):
         prompt = (
@@ -206,6 +209,76 @@ class CourseBuilder:
 
         return {chapter_no: "Failed to generate questions after multiple retries."}
     
+    def get_scores(self, set: dict, chapter: str) -> Dict[str, int]:
+        """
+        Generates scores for each question in a given answer set for a chapter.
+        
+        Args:
+            set (dict): A dictionary containing questions as keys and answers as values.
+            chapter (str): The chapter name or index for reference.
+        
+        Returns:
+            Dict[str, int]: A dictionary mapping each question to its corresponding score.
+        """
+        with open("course.json", "r") as file:
+            course_data = json.load(file)
+        
+        prompt = (
+            "You are an experienced exam evaluator."
+            f" The question paper is based on the chapter: {course_data['chapters'][chapter]}."
+            " You are provided with an answer sheet in JSON format with questions as keys and answers as values."
+            f" The answer sheet is: {set}."
+            " Your task is to evaluate each answer based on the chapter content and assign a percentage score."
+            " The output must be an array containing scores for each question in the order they appear, e.g., [80, 90, 70, ...]."
+            " Provide only the array as output with no extra text."
+        )
+        
+        run: RunResponse = self.agent.run(prompt)
+        response = run.content.strip()
+        
+        match = re.search(r"\[(.*?)\]", response)
+        if not match:
+            raise ValueError("The response does not contain a valid array of scores.")
+        
+        scores = [int(score.strip()) for score in match.group(1).split(",")]
+        
+        question_scores = {f"question{i+1}": scores[i] for i in range(len(scores))}
+        
+        return question_scores
+    
+    def get_eval(self, set: dict, chapter: str) -> str:
+        """
+        Generates a performance evaluation for the provided answer sheet based on the chapter's content.
+
+        Args:
+            set (dict): A dictionary with questions as keys and student's answers as values.
+            chapter (str): The chapter name or index for reference.
+
+        Returns:
+            str: A comprehensive evaluation of the student's performance.
+        """
+        
+        with open("course.json", "r") as file:
+            course_data = json.load(file)
+        
+        prompt = (
+            "You are an experienced and meticulous exam evaluator."
+            f" The question paper evaluates knowledge from the chapter titled: '{course_data['chapters'][chapter]}'."
+            " You are provided with a JSON-format answer sheet where questions are keys and the student's answers are the values."
+            f" The answer sheet is as follows: {set}."
+            " Based on this answer sheet, your task is to provide an overall evaluation of the student's performance."
+            " The evaluation should include the following:"
+            " 1. A concise summary of the student's overall performance, highlighting their general understanding of the chapter."
+            " 2. Specific concepts or areas from the chapter where the student demonstrates weakness or incomplete understanding."
+            " 3. Detailed, actionable suggestions for improvement to help the student perform better."
+            " Avoid giving numerical scores or percentages in your evaluation."
+            " Structure your response with the following sections: 'Overall Summary', 'Weak Areas', and 'Suggestions for Improvement'."
+            " Ensure your response is clear, constructive, and tailored to the content of the chapter."
+        )
+        
+        run: RunResponse = self.agent.run(prompt)
+        return run.content
+
 # Example usage of how it works so that it becomes easier to interate with backen later.
 # if __name__ == "__main__":
 #     vatsal = CourseBuilder("I want a course to help me learn about stock trading.")
