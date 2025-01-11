@@ -42,7 +42,7 @@ function Dashboard() {
       <section className="relative h-[calc(100vh-4rem)] flex items-center justify-center">
         {/* Background Image Container */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative w-[60%] max-w-4xl h-[70%] rounded-2xl overflow-hidden">
+          <div className="relative w-[800px] h-[600px] rounded-2xl overflow-hidden">
             <img 
               src="/assets/landing.webp" 
               alt="Background" 
