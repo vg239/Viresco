@@ -19,6 +19,14 @@ function App() {
             <Route path="/recommendation" element={<Recommendation />} />
             <Route path="/news" element={<News />} />
             <Route path="/portfolio" element={<Portfolio />} />
+            <Route 
+              path="/learn/:id" 
+              element={
+                
+                  <ChapterView />
+                
+              } 
+            />
             <Route path="/watchlist" element={<Watchlist />} />
           </Routes>
         </main>

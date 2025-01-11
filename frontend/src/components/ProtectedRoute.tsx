@@ -1,21 +1,18 @@
-import { ReactNode } from 'react';
-import { Navigate } from 'react-router-dom';
 import { useAnonAadhaar } from "@anon-aadhaar/react";
-import { toast } from 'react-toastify';
+import { Navigate } from "react-router-dom";
 
 interface ProtectedRouteProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
-function ProtectedRoute({ children }: ProtectedRouteProps) {
+const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [anonAadhaar] = useAnonAadhaar();
 
   if (anonAadhaar?.status !== "logged-in") {
-    toast.error("Please log in to access this page.");
-    return <Navigate to="/" />;
+    return <Navigate to="/news" replace />;
   }
 
   return <>{children}</>;
-}
+};
 
 export default ProtectedRoute; 
