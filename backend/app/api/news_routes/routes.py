@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import Dict, Any, List
 from ...news_recommendation_module.news import NewsReporter
 from app.redis_db.redis import redis_client
+import yfinance as yf
 
 router = APIRouter()
 
@@ -77,7 +78,6 @@ class WalletRequest(BaseModel):
 
 @router.post("/news")
 async def news(request: WalletRequest):
-    print("Received wallet address:", request.wallet_address)
     portfolio = redis_client.get_portfolio(request.wallet_address)
     if not portfolio:
         raise HTTPException(status_code=404, detail="Portfolio not found")
@@ -87,7 +87,6 @@ async def news(request: WalletRequest):
 
 @router.post("/recommendations")
 async def recommendations(request: WalletRequest):
-    print("Received wallet address:", request.wallet_address)
     portfolio = redis_client.get_portfolio(request.wallet_address)
     if not portfolio:
         raise HTTPException(status_code=404, detail="Portfolio not found")
@@ -119,3 +118,12 @@ async def update_portfolio_section(update: PortfolioSectionUpdate):
     if not success:
         raise HTTPException(status_code=500, detail="Failed to update portfolio section")
     return {"message": "Portfolio section updated successfully"}
+
+@router.get("/portfolio/{wallet_address}/stocks")
+async def get_stocks(wallet_address:str):
+    portfolio = redis_client.get_portfolio(wallet_address)
+    if not portfolio:
+        raise HTTPException(status_code=404, detail="Portfolio not found")
+    reporter.set_portfolio(portfolio)
+    updated_portfolio = reporter.update_portfolio_prices()
+    return updated_portfolio

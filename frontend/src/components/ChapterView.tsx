@@ -8,7 +8,6 @@ import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkGfm from 'remark-gfm';
 import { BookOpen, Clock, Award, CheckCircle2, XCircle } from 'lucide-react';
 import { useCourseStore } from '@/store/courseStore';
-import { elevenLabsAPI } from '@/lib/elevenlabs';
 import { useEffect, useRef } from 'react';
 
 interface ChapterState {
@@ -35,11 +34,7 @@ const ChapterView = () => {
   const widgetContainerRef = useRef<HTMLDivElement>(null);
   const currentCourse = getCurrentCourse();
 
-  useEffect(() => {
-    if (currentCourse?.agentId && widgetContainerRef.current) {
-      widgetContainerRef.current.innerHTML = elevenLabsAPI.getAgentWidget(currentCourse.agentId);
-    }
-  }, [currentCourse?.agentId]);
+
 
   const handleAnswerChange = (index: number, value: string) => {
     const newAnswers = [...answers];
@@ -217,13 +212,6 @@ const ChapterView = () => {
         </div>
       </div>
 
-      {/* AI Tutor Widget */}
-      {currentCourse?.agentId && (
-        <div 
-          ref={widgetContainerRef}
-          className="fixed bottom-8 right-8 z-50"
-        />
-      )}
     </div>
   );
 };
