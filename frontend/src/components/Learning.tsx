@@ -9,6 +9,7 @@ import { learnAPI } from '@/lib/api';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useCourseStore } from '@/store/courseStore';
 import { elevenLabsAPI } from '@/lib/elevenlabs';
+import { ElevenLabsWidget } from './ElevenLabsWidget';
 
 const lessons = [
   {
@@ -150,44 +151,32 @@ export default function Learning() {
   }, [courseId, setCurrentCourse, clearCurrentCourse]);
 
   useEffect(() => {
-    if (anonAadhaar?.status !== "logged-in") {
+    if (anonAadhaar?.status !== "logged-out") {
       toast.info("Please log in to access full content", { toastId: "login-prompt" });
     }
   }, [anonAadhaar?.status]);
 
   const handleGenerateCourse = async () => {
-    if (!query.trim()) {
-      toast.error("Please enter a topic to learn about");
-      return;
-    }
+    if (!query.trim()) return;
 
     try {
       setIsLoading(true);
       const response = await learnAPI.generateCourse(query);
-      
-      // Format the query for the URL
       const formattedQuery = query.toLowerCase().replace(/\s+/g, '_');
       
-      // First add the course without agent ID
+      // Add the course first
       addCourse(query, response);
       
-      // Then create the ElevenLabs agent
+      // Create the ElevenLabs agent
       setIsCreatingAgent(true);
       try {
-        const agentId = await elevenLabsAPI.createAgent(query, {
-          syllabus: response.syllabus,
-          chapters: response.chapters
-        });
-        
-        if (agentId) {
-          updateCourseAgent(formattedQuery, agentId);
-          toast.success("AI tutor created successfully!");
-        } else {
-          throw new Error('No agent ID received');
-        }
+        const newAgentId = await elevenLabsAPI.createAgent(query);
+        console.log("Created agent with ID:", newAgentId);
+        updateCourseAgent(formattedQuery, newAgentId);
+        toast.success("AI tutor created successfully!");
       } catch (error) {
-        console.error('Failed to create AI tutor:', error);
-        toast.error(error instanceof Error ? error.message : "Failed to create AI tutor");
+        console.error("Error creating agent:", error);
+        toast.error("Failed to create AI tutor");
       } finally {
         setIsCreatingAgent(false);
       }
@@ -195,7 +184,6 @@ export default function Learning() {
       navigate(`/learning/${formattedQuery}`);
     } catch (error) {
       toast.error("Failed to generate course");
-      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -258,7 +246,7 @@ export default function Learning() {
         </div>
 
         {/* Course Generation Section - Always visible on /learning */}
-        {!courseId && anonAadhaar?.status === "logged-in" && (
+        {!courseId && anonAadhaar?.status === "logged-out" && (
           <>
             <div className="max-w-3xl mx-auto mb-16">
               <motion.div
@@ -327,6 +315,7 @@ export default function Learning() {
                                   AI Tutor Available
                                 </span>
                               )}
+                              
                             </div>
                           </div>
                         </div>
@@ -390,7 +379,11 @@ export default function Learning() {
                     </p>
                   </motion.div>
                 ))}
+                {currentCourse.agentId && (
+                    <ElevenLabsWidget agentId={currentCourse.agentId} />
+                )}
               </div>
+              
             )}
           </div>
         )}
@@ -418,9 +411,13 @@ export default function Learning() {
               <span className="text-sm text-black/60">Progress: 55%</span>
               <span className="text-sm font-medium text-green-600">{courses.length} Courses</span>
             </div>
+            
           </motion.div>
         </div>
       </div>
+
+      {/* Add the widget when agentId is available */}
+      
     </div>
   );
 } 

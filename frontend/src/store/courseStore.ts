@@ -4,12 +4,8 @@ import { persist } from 'zustand/middleware';
 interface Course {
   id: string;
   title: string;
+  data: any;
   agentId?: string;
-  data: {
-    syllabus: Record<string, string>;
-    chapters: Record<string, string>;
-    questions: Record<string, string>;
-  };
 }
 
 interface CourseState {

@@ -1,33 +1,24 @@
 import axios from 'axios';
 
 const ELEVENLABS_API_KEY = import.meta.env.VITE_ELEVENLABS_API_KEY;
-const ELEVENLABS_API_URL = 'https://api.elevenlabs.io/v1/conversational-ai';
+const ELEVENLABS_API_URL = 'https://api.elevenlabs.io/v1/convai/agents/create';
 
 export const elevenLabsAPI = {
-  async createAgent(courseTitle: string, courseContent: any) {
+  async createAgent(query: string) {
     try {
+      console.log("Creating agent for query:", query);
+      
       const response = await axios.post(
-        `${ELEVENLABS_API_URL}/create-agent`,
+        ELEVENLABS_API_URL,
         {
-          name: `Course Assistant: ${courseTitle}`,
-          description: `AI tutor specialized in teaching ${courseTitle}`,
-          image_url: null,
-          initial_message: `Welcome! I'm your AI tutor for ${courseTitle}. How can I help you understand the course material better?`,
-          knowledge_base: {
-            type: "text",
-            content: JSON.stringify(courseContent)
-          },
-          voice_settings: {
-            voice_id: "21m00Tcm4TlvDq8ikWAM",
-            model_id: "eleven_turbo_v2",
-            stability: 0.5,
-            similarity_boost: 0.75,
-            style: 0.0,
-            use_speaker_boost: true
-          },
-          response_format: {
-            type: "markdown",
-            max_length: 800
+          "conversation_config": {
+            "agent": {
+              "prompt": {
+                "prompt": query,
+              },
+              "first_message": `Hello! I'm your AI tutor for ${query}. I'm here to help you understand the concepts better. What would you like to learn about?`,
+              "language": "en"
+            }
           }
         },
         {
@@ -49,9 +40,5 @@ export const elevenLabsAPI = {
       }
       throw error;
     }
-  },
-
-  getAgentWidget(agentId: string) {
-    return `<elevenlabs-convai agent-id="${agentId}"></elevenlabs-convai><script src="https://elevenlabs.io/convai-widget/index.js" async type="text/javascript"></script>`;
   }
 }; 
