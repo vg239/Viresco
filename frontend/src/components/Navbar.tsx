@@ -28,11 +28,11 @@ export function Navbar() {
   const location = useLocation();
   const [anonAadhaar] = useAnonAadhaar();
 
-  useEffect(() => {
-    if (anonAadhaar?.status !== "logged-in") {
-      toast.info("Please log in with Anon Aadhaar to access all features");
-    }
-  }, [anonAadhaar?.status]);
+  // useEffect(() => {
+  //   if (anonAadhaar?.status !== "logged-in") {
+  //     toast.info("Please log in with Anon Aadhaar to access all features");
+  //   }
+  // }, [anonAadhaar?.status]);
 
   return (
     <nav className="fixed top-0 w-full z-50">
