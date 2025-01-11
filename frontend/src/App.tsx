@@ -1,21 +1,18 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { AnonAadhaarProvider } from '@anon-aadhaar/react';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import Layout from './components/Layout';
-import Dashboard from './components/Dashboard';
-import Learning from './components/Learning';
-import Recommendation from './components/Recommendation';
-import News from './components/News';
-import Portfolio from './components/Portfolio';
-import Watchlist from './components/Watchlist';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Navbar } from '@/components/Navbar';
+import Dashboard from '@/components/Dashboard';
+import Learning from '@/components/Learning';
+import Recommendation from '@/components/Recommendation';
+import News from '@/components/News';
+import Portfolio from '@/components/Portfolio';
+import Watchlist from '@/components/Watchlist';
 
 function App() {
   return (
-    <AnonAadhaarProvider>
-      <Router>
-        <Layout>
+    <Router>
+      <div className="min-h-screen bg-white">
+        <Navbar />
+        <main className="pt-16">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/learning" element={<Learning />} />
@@ -24,21 +21,9 @@ function App() {
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/watchlist" element={<Watchlist />} />
           </Routes>
-        </Layout>
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-        />
-      </Router>
-    </AnonAadhaarProvider>
+        </main>
+      </div>
+    </Router>
   );
 }
 

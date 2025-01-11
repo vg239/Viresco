@@ -42,11 +42,12 @@ function Dashboard() {
       <section className="relative h-[calc(100vh-4rem)] flex items-center justify-center">
         {/* Background Image Container */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative w-[90%] max-w-6xl h-[80%] rounded-3xl overflow-hidden">
+          <div className="relative w-[60%] max-w-4xl h-[70%] rounded-2xl overflow-hidden">
             <img 
               src="/assets/landing.webp" 
               alt="Background" 
-              className="w-full h-full object-cover opacity-60"
+              className="w-full h-full object-cover opacity-50"
+              style={{ objectPosition: 'center 20%' }}
             />
             <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/30" />
           </div>

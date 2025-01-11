@@ -17,4 +17,23 @@
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* Custom styles for AnonAadhaar button */
+.btn-aa {
+  height: 36px !important;
+  padding: 0 12px !important;
+  border-radius: 6px !important;
+  font-size: 14px !important;
+  background: black !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 500 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.btn-aa:hover {
+  opacity: 0.9 !important;
 } 
