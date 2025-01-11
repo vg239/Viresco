@@ -8,7 +8,9 @@ export default {
   theme: {
   	extend: {
   		animation: {
-  			gradient: 'gradient 6s linear infinite'
+  			gradient: 'gradient 6s linear infinite',
+  			'shimmer-slide': 'shimmer-slide var(--speed) ease-in-out infinite alternate',
+  			'spin-around': 'spin-around calc(var(--speed) * 2) infinite linear'
   		},
   		backgroundSize: {
   			'300%': '300%'
@@ -20,6 +22,25 @@ export default {
   				},
   				'50%': {
   					backgroundPosition: '100% 50%'
+  				}
+  			},
+  			'shimmer-slide': {
+  				to: {
+  					transform: 'translate(calc(100cqw - 100%), 0)'
+  				}
+  			},
+  			'spin-around': {
+  				'0%': {
+  					transform: 'translateZ(0) rotate(0)'
+  				},
+  				'15%, 35%': {
+  					transform: 'translateZ(0) rotate(90deg)'
+  				},
+  				'65%, 85%': {
+  					transform: 'translateZ(0) rotate(270deg)'
+  				},
+  				'100%': {
+  					transform: 'translateZ(0) rotate(360deg)'
   				}
   			}
   		},
@@ -71,16 +92,22 @@ export default {
   			}
   		},
   		fontFamily: {
-  			'serif-primary': ['Playfair Display', 'serif'],
-  			'serif-primary-italic': ['Playfair Display', 'serif'],
+  			'serif-primary': [
+  				'Playfair Display',
+  				'serif'
+  			],
+  			'serif-primary-italic': [
+  				'Playfair Display',
+  				'serif'
+  			]
   		},
   		fontSize: {
   			'10xl': '10rem',
-  			'11xl': '12rem',
+  			'11xl': '12rem'
   		},
   		lineHeight: {
-  			'extra-tight': '1.1',
-  		},
+  			'extra-tight': '1.1'
+  		}
   	}
   },
   plugins: [require("tailwindcss-animate")],
