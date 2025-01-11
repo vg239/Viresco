@@ -10,7 +10,9 @@ export default {
   		animation: {
   			gradient: 'gradient 6s linear infinite',
   			'shimmer-slide': 'shimmer-slide var(--speed) ease-in-out infinite alternate',
-  			'spin-around': 'spin-around calc(var(--speed) * 2) infinite linear'
+  			'spin-around': 'spin-around calc(var(--speed) * 2) infinite linear',
+        marquee: "marquee var(--duration) linear infinite",
+        "marquee-vertical": "marquee-vertical var(--duration) linear infinite"
   		},
   		backgroundSize: {
   			'300%': '300%'
@@ -24,6 +26,14 @@ export default {
   					backgroundPosition: '100% 50%'
   				}
   			},
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(calc(-100% - var(--gap)))" },
+        },
+        "marquee-vertical": {
+          from: { transform: "translateY(0)" },
+          to: { transform: "translateY(calc(-100% - var(--gap)))" },
+        },
   			'shimmer-slide': {
   				to: {
   					transform: 'translate(calc(100cqw - 100%), 0)'
