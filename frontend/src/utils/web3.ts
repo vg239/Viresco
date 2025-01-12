@@ -24,20 +24,32 @@ export const NETWORK_CONFIGS = {
     },
     rpcUrls: [`https://sepolia.infura.io/v3/${INFURA_API_KEY}`],
     blockExplorerUrls: ['https://sepolia.etherscan.io']
+  },
+  avalanche: {
+    chainId: '0xa869',
+    chainName: 'Avalanche Fuji Testnet',
+    nativeCurrency: {
+      name: 'AVAX',
+      symbol: 'AVAX',
+      decimals: 18
+    },
+    rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
+    blockExplorerUrls: ['https://testnet.snowtrace.io']
   }
 };
 
 // Create default providers
 const defaultProviders = {
   amoy: new ethers.providers.JsonRpcProvider(NETWORK_CONFIGS.amoy.rpcUrls[0]),
-  sepolia: new ethers.providers.JsonRpcProvider(NETWORK_CONFIGS.sepolia.rpcUrls[0])
+  sepolia: new ethers.providers.JsonRpcProvider(NETWORK_CONFIGS.sepolia.rpcUrls[0]),
+  avalanche: new ethers.providers.JsonRpcProvider(NETWORK_CONFIGS.avalanche.rpcUrls[0])
 };
 
 export async function connectWallet() {
   if (!window.ethereum) {
     return {
       address: null,
-      provider: defaultProviders.sepolia,
+      provider: defaultProviders.avalanche,
       signer: null
     };
   }
@@ -47,12 +59,11 @@ export async function connectWallet() {
       method: 'eth_requestAccounts' 
     });
 
-    // Try networks in order: Amoy, then Sepolia
-    for (const network of ['amoy', 'sepolia']) {
+    // Try networks in order: Amoy, Sepolia, then Avalanche
+    for (const network of ['amoy', 'sepolia', 'avalanche']) {
       try {
         const config = NETWORK_CONFIGS[network];
         
-        // Try switching to network
         try {
           await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
@@ -65,14 +76,13 @@ export async function connectWallet() {
               params: [config]
             });
           } else {
-            continue; // Try next network
+            continue;
           }
         }
 
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
         
-        // Test connection
         await provider.getBlockNumber();
         
         return {
@@ -83,25 +93,25 @@ export async function connectWallet() {
         };
       } catch (error) {
         console.error(`Failed to connect to ${network}:`, error);
-        continue; // Try next network
+        continue;
       }
     }
 
-    // If all networks fail, return Sepolia provider
+    // If all networks fail, return Avalanche provider
     return {
       address: null,
-      provider: defaultProviders.sepolia,
+      provider: defaultProviders.avalanche,
       signer: null,
-      network: 'sepolia'
+      network: 'avalanche'
     };
 
   } catch (error) {
     console.error('Wallet connection error:', error);
     return {
       address: null,
-      provider: defaultProviders.sepolia,
+      provider: defaultProviders.avalanche,
       signer: null,
-      network: 'sepolia'
+      network: 'avalanche'
     };
   }
 }

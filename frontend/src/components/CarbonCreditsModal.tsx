@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ethers } from 'ethers';
-import { FinancePortfolioABI, CONTRACT_ADDRESS } from '../contracts/FinancePortfolio';
 import { uploadToIPFS } from '../utils/pinata';
 import { connectWallet } from '../utils/web3';
 
@@ -16,9 +15,10 @@ export function CarbonCreditsModal({ isOpen, onClose, portfolioData }: CarbonCre
   const [mintedNFT, setMintedNFT] = useState<{
     hash: string;
     imageUrl: string;
+    signature?: string;
   } | null>(null);
 
-  const mintNFT = async () => {
+  const handleMint = async () => {
     try {
       setMinting(true);
 
@@ -39,47 +39,21 @@ export function CarbonCreditsModal({ isOpen, onClose, portfolioData }: CarbonCre
         return;
       }
 
-      // Step 3: Mint NFT
+      // Step 3: Get MetaMask signature
       try {
-        const contract = new ethers.Contract(
-          CONTRACT_ADDRESS,
-          FinancePortfolioABI,
-          walletData.signer
-        );
-
-        const gasEstimate = await contract.estimateGas.mintCarbonCredits(ipfsHash);
-        const tx = await contract.mintCarbonCredits(ipfsHash, {
-          gasLimit: gasEstimate.mul(120).div(100)
-        });
+        const message = `Signing Carbon Credits NFT with IPFS hash: ${ipfsHash}`;
+        const signature = await walletData.signer.signMessage(message);
         
-        const receipt = await tx.wait();
-        
-        // Only set mintedNFT if both IPFS upload and minting succeed
+        // Set the minted NFT state with IPFS hash and signature
         setMintedNFT({
           hash: ipfsHash,
-          imageUrl: `/src/NFT/Carbon_credits.webp`
+          imageUrl: `/src/NFT/Carbon_credits.webp`,
+          signature
         });
 
-        // Add NFT to MetaMask
-        if (window.ethereum) {
-          try {
-            await window.ethereum.request({
-              method: 'wallet_watchAsset',
-              params: {
-                type: 'ERC721',
-                options: {
-                  address: CONTRACT_ADDRESS,
-                  tokenId: receipt.events[0].args.tokenId.toString(),
-                  image: `https://gateway.pinata.cloud/ipfs/${ipfsHash}`
-                },
-              },
-            });
-          } catch (error) {
-            console.error("Error adding NFT to wallet:", error);
-          }
-        }
+        console.log("Signature:", signature);
       } catch (error) {
-        console.error("Minting failed:", error);
+        console.error("Error getting signature:", error);
       }
     } catch (error) {
       console.error("Error in mint process:", error);
@@ -102,13 +76,10 @@ export function CarbonCreditsModal({ isOpen, onClose, portfolioData }: CarbonCre
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-3xl p-6 max-w-md w-full shadow-xl"
+              className="bg-white rounded-2xl shadow-xl max-w-lg w-full overflow-hidden"
             >
-              <div className="text-center">
-                <h3 className="text-2xl font-bold text-gray-800 mb-4">
-                  {mintedNFT ? 'NFT Minted Successfully!' : 'Redeem Carbon Credits'}
-                </h3>
-
+              <div className="p-6">
+                <h2 className="text-2xl font-bold mb-4">Carbon Credits NFT</h2>
                 {mintedNFT ? (
                   <div className="space-y-4">
                     <div className="bg-green-50 p-4 rounded-2xl">
@@ -120,13 +91,18 @@ export function CarbonCreditsModal({ isOpen, onClose, portfolioData }: CarbonCre
                       <p className="text-sm text-gray-600 break-all">
                         IPFS Hash: {mintedNFT.hash}
                       </p>
+                      {mintedNFT.signature && (
+                        <p className="text-sm text-gray-600 break-all mt-2">
+                          Signature: {mintedNFT.signature.slice(0, 30)}...
+                        </p>
+                      )}
                     </div>
                     <div className="flex gap-4">
                       <a
                         href={`https://gateway.pinata.cloud/ipfs/${mintedNFT.hash}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 px-6 py-3 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors"
+                        className="flex-1 px-6 py-3 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors text-center"
                       >
                         View on IPFS
                       </a>
@@ -147,22 +123,22 @@ export function CarbonCreditsModal({ isOpen, onClose, portfolioData }: CarbonCre
                         className="w-full h-64 object-cover rounded-xl mb-4"
                       />
                       <p className="text-gray-600">
-                        Mint your Carbon Credits NFT to showcase your contribution to environmental sustainability.
+                        Upload your portfolio data to IPFS and sign with MetaMask.
                       </p>
                     </div>
                     <div className="flex gap-4">
                       <button
-                        onClick={mintNFT}
+                        onClick={handleMint}
                         disabled={minting}
                         className="flex-1 px-6 py-3 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors shadow-md disabled:opacity-50 flex items-center justify-center gap-2"
                       >
                         {minting ? (
                           <>
                             <div className="w-5 h-5 border-t-2 border-white rounded-full animate-spin" />
-                            Minting...
+                            Processing...
                           </>
                         ) : (
-                          'Mint NFT'
+                          'Upload & Sign'
                         )}
                       </button>
                       <button
@@ -180,7 +156,7 @@ export function CarbonCreditsModal({ isOpen, onClose, portfolioData }: CarbonCre
         )}
       </AnimatePresence>
 
-      {/* Floating NFT Preview */}
+      {/* Success Notification */}
       <AnimatePresence>
         {mintedNFT && !isOpen && (
           <motion.div
@@ -196,8 +172,8 @@ export function CarbonCreditsModal({ isOpen, onClose, portfolioData }: CarbonCre
                 className="w-12 h-12 rounded-xl object-cover"
               />
               <div className="text-sm">
-                <p className="font-medium text-gray-800">Carbon Credits NFT</p>
-                <p className="text-gray-500 text-xs">Successfully minted!</p>
+                <p className="font-medium text-gray-800">Portfolio Data</p>
+                <p className="text-gray-500 text-xs">Successfully uploaded & signed!</p>
               </div>
               <button
                 onClick={() => setMintedNFT(null)}

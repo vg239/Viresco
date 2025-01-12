@@ -1,4 +1,3 @@
-//pehele install a move ka extension for better understanding not very well versed with move but as basic reading goes this made sense
 module portfolio_addr::finance_portfolio {
     use std::string::{Self, String};
     use std::signer;
@@ -202,8 +201,6 @@ module portfolio_addr::finance_portfolio {
         let token_id = portfolio_data.carbon_nft_counter;
         portfolio_data.carbon_nft_counter = portfolio_data.carbon_nft_counter + 1;
 
-        // not full sure about the nft minting part
-        // as far as i went through repos you gotta do smn like token::create_token_script(...);
 
         event::emit_event(&mut portfolio_data.nft_minted_events, NFTMintedEvent {
             owner: recipient,
@@ -219,8 +216,6 @@ module portfolio_addr::finance_portfolio {
     ) {
         let token_id = portfolio_data.lesson_nft_counter;
         portfolio_data.lesson_nft_counter = portfolio_data.lesson_nft_counter + 1;
-
-        // not full sure about the nft minting part
 
         event::emit_event(&mut portfolio_data.nft_minted_events, NFTMintedEvent {
             owner: recipient,
