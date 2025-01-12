@@ -199,7 +199,7 @@ function PortfolioView() {
                   <p className="text-green-700">
                     Current Price: ${updatedStockPrices[index]?.current_price || 'N/A'}
                   </p>
-                  <p className={${updatedStockPrices[index]?.price_change >= 0 ? 'text-green-600' : 'text-red-600'}}>
+                  <p className={`${updatedStockPrices[index]?.price_change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                     Change: {updatedStockPrices[index]?.price_change}%
                   </p>
                 </div>
