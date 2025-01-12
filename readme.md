@@ -5,19 +5,18 @@
   </picture>
 </div>
 
-  # Viresco 🌱
-  
-  [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
-  [![API Status](https://img.shields.io/badge/API-Active-success)](https://api.viresco.dev/health)
+# Viresco 🌱
 
-  > *Empowering Sustainable Finance Through Technology*
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+[![API Status](https://img.shields.io/badge/API-Active-success)](https://api.viresco.dev/health)
 
-  🌱 **Invest Sustainably** • 📚 **Learn Continuously** • 🌍 **Grow Responsibly**
+> *Empowering Sustainable Finance Through Technology*
+
+🌱 **Invest** • 📚 **Learn** • 🌍 **Grow Green**
 
 <div align="center">
   <img src="./assets/dashboard-preview.png" alt="Platform Overview" width="80%" style="display: block; margin: 0 auto;" />
 </div>
-
 
 ---
 
@@ -37,9 +36,10 @@
 Viresco revolutionizes sustainable finance by providing a comprehensive platform that seamlessly integrates:
 - Advanced portfolio management with environmental impact tracking
 - AI-powered personalized learning experiences
-- Blockchain-based carbon credit system
+- Blockchain-based carbon credit system and NFT's
 - Privacy-first authentication using zero-knowledge proofs
 - Real-time market insights and eco-conscious recommendations
+- IPFS-based decentralized storage for enhanced security and reliability
 
 ## 🔑 Core Features
 
@@ -49,6 +49,7 @@ Viresco revolutionizes sustainable finance by providing a comprehensive platform
   - Age verification (18+) without PII exposure
   - Multi-factor authentication support
   - Encrypted data storage and transmission
+  - IPFS integration for decentralized data storage
 
 ### Portfolio Management
 - **Comprehensive Asset Tracking**
@@ -66,7 +67,7 @@ Viresco revolutionizes sustainable finance by providing a comprehensive platform
 ### AI-Powered Learning Platform
 - **Personalized Education**
   - Dynamic course generation based on user proficiency
-  - AI tutors with natural language processing
+  - Customised AI tutors
   - Voice-enabled interactive sessions
   - Progress tracking and analytics
 
@@ -100,12 +101,12 @@ Viresco revolutionizes sustainable finance by providing a comprehensive platform
 - **AI/ML Stack**
   - Gemini API for NLP
   - ElevenLabs for voice synthesis
-  - Custom ML models for predictions
   - Phidata framework for AI agents
 
 - **Blockchain Integration**
   - Web3.js for client-side
   - Ethereum smart contracts
+  - IPFS for decentralized storage
 
 ## 🚀 Getting Started
 
@@ -149,17 +150,18 @@ cp .env.example .env
 VITE_API_URL=http://localhost:8000
 VITE_ELEVENLABS_API_KEY=your_key_here
 VITE_WEB3_PROVIDER_URL=your_provider_url
+VITE_IPFS_GATEWAY=your_ipfs_gateway
 
 # Backend (.env)
 REDIS_URL=redis://localhost:6379
 GEMINI_API_KEY=your_key_here
+IPFS_NODE_URL=your_ipfs_node_url
 ```
 
 5. **Database Setup**
 ```bash
 docker-compose up -d
 ```
-
 
 ## 🌍 Environmental Impact
 
