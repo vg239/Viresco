@@ -66,4 +66,22 @@ export const recommendationAPI = {
   }
 };
 
+export const callAPI = {
+  startCall: async () => {
+    try {
+      console.log("Starting call...");
+      const response = await axios.get('http://localhost:5000/start-call', {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      console.log("Call response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error starting call:', error);
+      throw error;
+    }
+  }
+};
+
 export default api;

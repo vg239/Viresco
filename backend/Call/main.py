@@ -5,6 +5,8 @@ from flask import Flask, request, send_file
 from twilio.twiml.voice_response import VoiceResponse
 from ElevenLabs import TextToSpeech
 from Response import ResponseAgent
+from flask_cors import CORS
+import subprocess
 
 # Load environment variables from .env file
 load_dotenv()
@@ -127,6 +129,14 @@ portfolio = {
 
 # Initialize Flask app and TTS
 app = Flask(__name__)
+# Enable CORS for all routes
+CORS(app, resources={
+    r"/*": {
+        "origins": ["http://localhost:5173", "http://127.0.0.1:5173"],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    }
+})
 tts = TextToSpeech()
 response_agent = ResponseAgent()
 response_agent.fetch_news(['^BSESN', "TCS.NS"])
@@ -137,13 +147,13 @@ account_sid = os.environ["TWILIO_ACCOUNT_SID"]
 auth_token = os.environ["TWILIO_AUTH_TOKEN"]
 client = Client(account_sid, auth_token)
 
-NGROK_URL = ""  # Your ngrok URL
+NGROK_URL = "https://cd61-160-20-123-3.ngrok-free.app"  # Your ngrok URL
 
 @app.route("/start-call", methods=['GET'])
 def make_call():
     call = client.calls.create(
         url=f"{NGROK_URL}/welcome",
-        to="+917892799071",
+        to="+919409814992",
         from_="+16412176555",
     )
     return str(call.sid)
