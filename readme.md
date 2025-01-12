@@ -17,8 +17,10 @@
   [Explore Demo](https://github.com) •
   [Read Docs](https://github.com) •
 
-  <img src="./assets/dashboard-preview.png" alt="Viresco Dashboard Preview" width="80%" />
+<div align="center">
+  <img src="./assets/dashboard-preview.png" alt="Platform Overview" width="80%" style="display: block; margin: 0 auto;" />
 </div>
+
 
 ---
 
@@ -36,7 +38,7 @@
 ## Overview
 
 <div align="center">
-  <img src="./assets/dashboard-preview.png" alt="Platform Overview" width="80%" style="display: block; margin: 0 auto;" />
+  <img src="./assets/platform-overview.png" alt="Platform Overview" width="80%" />
 </div>
 
 Viresco revolutionizes sustainable finance by providing a comprehensive platform that seamlessly integrates:
