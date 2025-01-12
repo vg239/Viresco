@@ -59,9 +59,9 @@ const ChapterView = () => {
     try {
       setIsSubmitting(true);
 
-      // Create answer mapping using question content as key
+      // Create answer mapping using question content as key, skipping the first question
       const answerMapping: { [key: string]: string } = {};
-      questions.forEach((question, index) => {
+      questions.slice(1).forEach((question, index) => {
         answerMapping[question] = answers[index] || '';
       });
 
@@ -75,7 +75,6 @@ const ChapterView = () => {
 
       const response = await submitQuiz(submission);
       console.log(response);
-
 
       setQuizResults(response);
       setSubmitted(true);
@@ -94,7 +93,7 @@ const ChapterView = () => {
       transition={{ duration: 0.5 }}
       className="space-y-8"
     >
-      {questions.map((question, index) => (
+      {questions.slice(1).map((question, index) => (
         <motion.div
           key={index}
           initial={{ opacity: 0, y: 20 }}
@@ -148,7 +147,7 @@ const ChapterView = () => {
             <div className="bg-white p-6 rounded-xl border shadow-sm">
               <h4 className="text-xl font-semibold text-gray-800 mb-4">Quiz Results</h4>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {questions.map((question, index) => (
+                {questions.slice(1).map((question, index) => (
                   <div 
                     key={index}
                     className={`p-4 rounded-lg border ${
