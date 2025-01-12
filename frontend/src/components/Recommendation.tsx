@@ -34,7 +34,7 @@ function Recommendation() {
       setIsLoading(true);
       console.log("Fetching recommendations for wallet:", DUMMY_WALLET);
       const response = await recommendationAPI.getRecommendations(DUMMY_WALLET);
-      console.log("Recommendations response:", response);
+      console.log("Recommendations response:", response.recommendations);
       
       // Transform API response into categories (adjust based on your actual API response)
       const categories: RecommendationCategory[] = [
