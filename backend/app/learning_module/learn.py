@@ -225,7 +225,7 @@ class CourseBuilder:
         
         prompt = (
             "You are an experienced exam evaluator."
-            f" The question paper is based on the chapter: {course_data['chapters'][chapter]}."
+            f" The question paper is based on the chapter: {course_data["chapters"]}."
             " You are provided with an answer sheet in JSON format with questions as keys and answers as values."
             f" The answer sheet is: {set}."
             " Your task is to evaluate each answer based on the chapter content and assign a percentage score."
@@ -263,7 +263,7 @@ class CourseBuilder:
         
         prompt = (
             "You are an experienced and meticulous exam evaluator."
-            f" The question paper evaluates knowledge from the chapter titled: '{course_data['chapters'][chapter]}'."
+            f" The question paper evaluates knowledge from the chapter titled: '{course_data["chapters"]}'."
             " You are provided with a JSON-format answer sheet where questions are keys and the student's answers are the values."
             f" The answer sheet is as follows: {set}."
             " Based on this answer sheet, your task is to provide an overall evaluation of the student's performance."

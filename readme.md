@@ -14,9 +14,6 @@
 
   🌱 **Invest Sustainably** • 📚 **Learn Continuously** • 🌍 **Grow Responsibly**
 
-  [Explore Demo](https://github.com) •
-  [Read Docs](https://github.com) •
-
 <div align="center">
   <img src="./assets/dashboard-preview.png" alt="Platform Overview" width="80%" style="display: block; margin: 0 auto;" />
 </div>
@@ -36,10 +33,6 @@
 - [License](#-license)
 
 ## Overview
-
-<div align="center">
-  <img src="./assets/platform-overview.png" alt="Platform Overview" width="80%" />
-</div>
 
 Viresco revolutionizes sustainable finance by providing a comprehensive platform that seamlessly integrates:
 - Advanced portfolio management with environmental impact tracking
