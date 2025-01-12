@@ -26,7 +26,7 @@ export const portfolioAPI = {
   },
   
   getPortfolio: async (walletAddress: string) => {
-    const response = await api.get(`/news/portfolio/${walletAddress}`);
+    const response = await api.get(/news/portfolio/${walletAddress});
     return response.data;
   },
   
@@ -36,6 +36,12 @@ export const portfolioAPI = {
       section: section,
       section_data: sectionData
     });
+    return response.data;
+  },
+  
+  getUpdatedStocks: async (walletAddress: string) => {
+    console.log("Fetching updated stock prices for wallet:", walletAddress);
+    const response = await api.get(/news/portfolio/${walletAddress}/stocks);
     return response.data;
   }
 };
@@ -60,4 +66,4 @@ export const recommendationAPI = {
   }
 };
 
-export default api; 
+export default api;

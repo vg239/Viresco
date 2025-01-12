@@ -115,26 +115,26 @@ class NewsReporter:
             f"The following is the latest news: {json.dumps(self.news_data, indent=2)}. Your task is to summarize the top 6 news items overall. "
             "Follow these instructions carefully:\n\n"
             
-            "1. **Summary Style**:\n"
+            "1. *Summary Style*:\n"
             "   - Use professional and concise language.\n"
             "   - Highlight key points, providing sufficient detail to make the context and implications clear.\n"
             "   - Avoid vague statements or unnecessary filler words.\n"
             "   - Ensure each summary is detailed and not overly brief.\n\n"
             
-            "2. **Structured Format**: Present each news item in the following format:\n"
+            "2. *Structured Format*: Present each news item in the following format:\n"
             "   Headline: <headline>\n"
             "   Content: <detailed and elaborate summary>\n"
             "   Link: <source link>\n\n"
             
-            "3. **Context & Implications**: Where applicable, include additional context to explain why the news matters, "
+            "3. *Context & Implications*: Where applicable, include additional context to explain why the news matters, "
             "potential effects on industries, companies, or markets, and any relevant background or recent developments.\n\n"
             
-            "4. **Exclusions**: Do not include:\n"
+            "4. *Exclusions*: Do not include:\n"
             "   - Duplicate or repetitive news items.\n"
             "   - Irrelevant information not tied to significant trends or events.\n"
             "   - Any indexing or numbering from the original data provided.\n\n"
             
-            "5. **Edge Case Handling**:\n"
+            "5. *Edge Case Handling*:\n"
             "   - If fewer than 6 news items are available, summarize only the ones provided.\n"
             "   - If a link is missing, omit the 'Link' field for that specific news item.\n\n"
             
@@ -176,10 +176,10 @@ class NewsReporter:
             }
 
         # Convert dictionary to JSON string without indentation or newlines
-        json_data = json.dumps(history_data, separators=(',', ':' ))
+        # json_data = json.dumps(history_data)
         
         # Return the plain string without escape characters (already no escape characters)
-        return json_data
+        return history_data
 
 
     def update_portfolio_prices(self):

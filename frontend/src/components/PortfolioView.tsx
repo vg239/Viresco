@@ -50,6 +50,7 @@ function PortfolioView() {
   const [loading, setLoading] = useState(true);
   const [editingSection, setEditingSection] = useState<string | null>(null);
   const [editData, setEditData] = useState<any[]>([]);
+  const [updatedStockPrices, setUpdatedStockPrices] = useState<any>(null);
 
   useEffect(() => {
     fetchPortfolio();
@@ -88,10 +89,27 @@ function PortfolioView() {
     }
   };
 
+  const handleStockUpdate = async () => {
+    try {
+      const data = await portfolioAPI.getUpdatedStocks(DUMMY_WALLET);
+      console.log(data);
+      setUpdatedStockPrices(data);
+      toast.success('Stock prices updated successfully');
+    } catch (error) {
+      toast.error('Error updating stock prices');
+      console.error('Error updating stock prices:', error);
+    }
+  };
+
   const renderSectionCard = (title: string, count: number) => (
     <div
       className="bg-white p-6 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow"
-      onClick={() => setSelectedSection(title)}
+      onClick={() => {
+        if (title === "Stocks") {
+          handleStockUpdate();
+        }
+        setSelectedSection(title);
+      }}
     >
       <h3 className="text-xl font-semibold mb-2">{title}</h3>
       <p className="text-gray-600">{count} items</p>
@@ -105,12 +123,21 @@ function PortfolioView() {
     if (!Array.isArray(sectionData)) return null;
 
     const isEditing = editingSection === selectedSection;
+    const showUpdatedPrices = selectedSection === "Stocks" && updatedStockPrices;
 
     return (
       <div className="mt-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">{selectedSection}</h2>
           <div className="space-x-2">
+            {selectedSection === "Stocks" && !isEditing && (
+              <button
+                onClick={handleStockUpdate}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                Update Prices
+              </button>
+            )}
             {isEditing ? (
               <>
                 <button
@@ -143,7 +170,7 @@ function PortfolioView() {
           </div>
         </div>
         <div className="space-y-4">
-          {(isEditing ? editData : sectionData).map((item, index) => (
+          {(isEditing ? editData : sectionData).map((item: any, index: number) => (
             <div key={index} className="bg-white p-4 rounded-lg shadow">
               {Object.entries(item).map(([key, value]) => (
                 <div key={key} className="mb-2">
@@ -167,6 +194,16 @@ function PortfolioView() {
                   )}
                 </div>
               ))}
+              {showUpdatedPrices && (
+                <div className="mt-2 p-2 bg-green-50 rounded">
+                  <p className="text-green-700">
+                    Current Price: ${updatedStockPrices[index]?.current_price || 'N/A'}
+                  </p>
+                  <p className={${updatedStockPrices[index]?.price_change >= 0 ? 'text-green-600' : 'text-red-600'}}>
+                    Change: {updatedStockPrices[index]?.price_change}%
+                  </p>
+                </div>
+              )}
               {isEditing && (
                 <button
                   onClick={() => {
@@ -234,4 +271,4 @@ function PortfolioView() {
   );
 }
 
-export default PortfolioView; 
+export default PortfolioView;
