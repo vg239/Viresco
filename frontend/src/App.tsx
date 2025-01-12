@@ -13,6 +13,7 @@ import Watchlist from '@/components/Watchlist';
 import ChapterView from '@/components/ChapterView';
 import LoadingHamster from '@/components/LoadingHamster';
 import { createContext, useContext, useState } from 'react';
+import { WalletProvider } from '@/context/WalletContext';
 
 interface LoadingContextType {
   isLoading: boolean;
@@ -31,36 +32,38 @@ function App() {
 
   return (
     <LoadingContext.Provider value={{ isLoading, setIsLoading }}>
-      <AnonAadhaarProvider>
-        <Router>
-          <div className="min-h-screen bg-white">
-            <Navbar />
-            <main className="pt-16">
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/learning" element={<Learning />} />
-                <Route path="/learning/:courseId" element={<Learning />} />
-                <Route path="/learning/:courseId/:chapterId" element={<ChapterView />} />
-                <Route path="/recommendation" element={<Recommendation />} />
-                <Route path="/news" element={<News />} />
-                <Route path="/watchlist" element={<Watchlist />} />
-                <Route path="/portfolio/view" element={<PortfolioView />} />
-                <Route path="/portfolio/create" element={<Portfolio />} />
-                <Route path="/portfolio" element={<Portfolio />} />
-              </Routes>
-            </main>
-            {isLoading && (
-              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-                <div className="bg-white p-8 rounded-2xl shadow-xl">
-                  <LoadingHamster />
-                  <p className="text-center mt-4 text-black/70 text-lg">Loading...</p>
+      <WalletProvider>
+        <AnonAadhaarProvider>
+          <Router>
+            <div className="min-h-screen bg-white">
+              <Navbar />
+              <main className="pt-16">
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/learning" element={<Learning />} />
+                  <Route path="/learning/:courseId" element={<Learning />} />
+                  <Route path="/learning/:courseId/:chapterId" element={<ChapterView />} />
+                  <Route path="/recommendation" element={<Recommendation />} />
+                  <Route path="/news" element={<News />} />
+                  <Route path="/watchlist" element={<Watchlist />} />
+                  <Route path="/portfolio/view" element={<PortfolioView />} />
+                  <Route path="/portfolio/create" element={<Portfolio />} />
+                  <Route path="/portfolio" element={<Portfolio />} />
+                </Routes>
+              </main>
+              {isLoading && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+                  <div className="bg-white p-8 rounded-2xl shadow-xl">
+                    <LoadingHamster />
+                    <p className="text-center mt-4 text-black/70 text-lg">Loading...</p>
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-          <ToastContainer />
-        </Router>
-      </AnonAadhaarProvider>
+              )}
+            </div>
+            <ToastContainer />
+          </Router>
+        </AnonAadhaarProvider>
+      </WalletProvider>
     </LoadingContext.Provider>
   );
 }

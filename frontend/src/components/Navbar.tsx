@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { HomeIcon, BookOpenIcon, LineChartIcon, NewspaperIcon, WalletIcon, HeartIcon, BarChart3Icon, PhoneIcon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAnonAadhaar, LogInWithAnonAadhaar } from "@anon-aadhaar/react";
 import { toast } from 'react-toastify';
 import { cn } from "@/lib/utils";
 import { Dock, DockIcon } from "@/components/ui/dock";
-import { ShimmerButton } from "@/components/magicui/shimmer-button";
+import { connectWallet } from "@/utils/web3";
 import {
   Tooltip,
   TooltipContent,
@@ -16,38 +16,90 @@ import {
 } from "@/components/ui/tooltip";
 import { callAPI } from '@/lib/api';
 
-const navItems = [
-  { path: '/', icon: HomeIcon, label: 'Dashboard' },
-  { path: '/learning', icon: BookOpenIcon, label: 'Learning' },
-  { path: '/recommendation', icon: LineChartIcon, label: 'Recommendation' },
-  { path: '/news', icon: NewspaperIcon, label: 'News' },
-  { path: '/portfolio', icon: BarChart3Icon, label: 'Portfolio' },
-  { 
-    path: '#', 
-    icon: PhoneIcon, 
-    label: 'Start Call',
-    onClick: async () => {
-      try {
-        await callAPI.startCall();
-        toast.success('Call started successfully!');
-      } catch (error) {
-        toast.error('Failed to start call');
-        console.error('Error starting call:', error);
-      }
-    }
-  },
-  { path: '#', icon: WalletIcon, label: 'Connect Wallet', onClick: () => toast.info("Wallet connection coming soon!") },
-];
-
 export function Navbar() {
   const location = useLocation();
   const [anonAadhaar] = useAnonAadhaar();
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
-  // useEffect(() => {
-  //   if (anonAadhaar?.status !== "logged-in") {
-  //     toast.info("Please log in with Anon Aadhaar to access all features");
-  //   }
-  // }, [anonAadhaar?.status]);
+  // Check for existing wallet connection on mount
+  useEffect(() => {
+    const checkWallet = async () => {
+      if (window.ethereum) {
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+          if (accounts.length > 0) {
+            setWalletAddress(accounts[0]);
+          }
+        } catch (err) {
+          console.error('Error checking wallet:', err);
+        }
+      }
+    };
+
+    checkWallet();
+  }, []);
+
+  // Listen for wallet changes
+  useEffect(() => {
+    if (window.ethereum) {
+      window.ethereum.on('accountsChanged', function (accounts: string[]) {
+        setWalletAddress(accounts[0] || null);
+      });
+
+      window.ethereum.on('chainChanged', function () {
+        window.location.reload();
+      });
+    }
+
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener('accountsChanged', () => {});
+        window.ethereum.removeListener('chainChanged', () => {});
+      }
+    };
+  }, []);
+
+  const handleWalletConnect = async () => {
+    try {
+      const walletData = await connectWallet();
+      if (walletData?.address) {
+        setWalletAddress(walletData.address);
+        const shortAddress = `${walletData.address.slice(0, 6)}...${walletData.address.slice(-4)}`;
+        toast.success(`Connected: ${shortAddress}`);
+      }
+    } catch (error) {
+      console.error('Wallet connection error:', error);
+      toast.error('Failed to connect wallet');
+    }
+  };
+
+  const navItems = [
+    { path: '/', icon: HomeIcon, label: 'Dashboard' },
+    { path: '/learning', icon: BookOpenIcon, label: 'Learning' },
+    { path: '/recommendation', icon: LineChartIcon, label: 'Recommendation' },
+    { path: '/news', icon: NewspaperIcon, label: 'News' },
+    { path: '/portfolio', icon: BarChart3Icon, label: 'Portfolio' },
+    { 
+      path: '#', 
+      icon: PhoneIcon, 
+      label: 'Start Call',
+      onClick: async () => {
+        try {
+          await callAPI.startCall();
+          toast.success('Call started successfully!');
+        } catch (error) {
+          toast.error('Failed to start call');
+          console.error('Error starting call:', error);
+        }
+      }
+    },
+    { 
+      path: '#', 
+      icon: WalletIcon, 
+      label: walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : 'Connect Wallet',
+      onClick: handleWalletConnect 
+    },
+  ];
 
   return (
     <nav className="fixed top-0 w-full z-50">
