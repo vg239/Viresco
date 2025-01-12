@@ -80,7 +80,7 @@ Viresco revolutionizes sustainable finance by providing a comprehensive platform
 ## 🏗 Architecture
 
 <div align="center">
-  <img src="./assets/architecture.png" alt="Viresco Architecture" width="80%" />
+  <img src="./assets/architecture.jpg" alt="Viresco Architecture" width="80%" />
 </div>
 
 ## 🛠 Technology Stack
