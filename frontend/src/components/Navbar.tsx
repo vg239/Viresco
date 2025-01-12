@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { HomeIcon, BookOpenIcon, LineChartIcon, NewspaperIcon, WalletIcon, HeartIcon, BarChart3Icon } from "lucide-react";
+import { HomeIcon, BookOpenIcon, LineChartIcon, NewspaperIcon, WalletIcon, HeartIcon, BarChart3Icon, PhoneIcon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAnonAadhaar, LogInWithAnonAadhaar } from "@anon-aadhaar/react";
 import { toast } from 'react-toastify';
@@ -14,6 +14,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { callAPI } from '@/lib/api';
 
 const navItems = [
   { path: '/', icon: HomeIcon, label: 'Dashboard' },
@@ -21,7 +22,20 @@ const navItems = [
   { path: '/recommendation', icon: LineChartIcon, label: 'Recommendation' },
   { path: '/news', icon: NewspaperIcon, label: 'News' },
   { path: '/portfolio', icon: BarChart3Icon, label: 'Portfolio' },
-  { path: '/watchlist', icon: HeartIcon, label: 'Watchlist' },
+  { 
+    path: '#', 
+    icon: PhoneIcon, 
+    label: 'Start Call',
+    onClick: async () => {
+      try {
+        await callAPI.startCall();
+        toast.success('Call started successfully!');
+      } catch (error) {
+        toast.error('Failed to start call');
+        console.error('Error starting call:', error);
+      }
+    }
+  },
   { path: '#', icon: WalletIcon, label: 'Connect Wallet', onClick: () => toast.info("Wallet connection coming soon!") },
 ];
 
