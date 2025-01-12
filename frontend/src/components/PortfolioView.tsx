@@ -3,6 +3,7 @@ import { portfolioAPI } from '../lib/api';
 import { toast } from 'react-toastify';
 import { FaChartLine, FaUniversity, FaBitcoin, FaHistory, FaChartPie } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import { CarbonCreditsModal } from './CarbonCreditsModal';
 
 interface PortfolioData {
   name: string;
@@ -53,6 +54,7 @@ function PortfolioView() {
   const [editingSection, setEditingSection] = useState<string | null>(null);
   const [editData, setEditData] = useState<any[]>([]);
   const [updatedStockPrices, setUpdatedStockPrices] = useState<any>(null);
+  const [showCarbonCreditsModal, setShowCarbonCreditsModal] = useState(false);
 
   useEffect(() => {
     fetchPortfolio();
@@ -421,6 +423,14 @@ function PortfolioView() {
               <div>
                 <p className="text-gray-600 mb-2">Total Portfolio Value</p>
                 <p className="text-4xl font-bold text-gray-800">₹{calculateTotalValue().toLocaleString()}</p>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setShowCarbonCreditsModal(true)}
+                  className="mt-4 px-6 py-3 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors shadow-md"
+                >
+                  Redeem Carbon Credits
+                </motion.button>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-white bg-opacity-50 p-4 rounded-2xl">
@@ -549,6 +559,12 @@ function PortfolioView() {
           renderSectionDetails()
         )
       )}
+
+      <CarbonCreditsModal 
+        isOpen={showCarbonCreditsModal}
+        onClose={() => setShowCarbonCreditsModal(false)}
+        portfolioData={portfolio}
+      />
     </div>
   );
 }
