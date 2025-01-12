@@ -36,7 +36,7 @@
 ## Overview
 
 <div align="center">
-  <img src="./assets/platform-overview.png" alt="Platform Overview" width="70%" />
+  <img src="./assets/platform-overview.png" alt="Platform Overview" width="80%" />
 </div>
 
 Viresco revolutionizes sustainable finance by providing a comprehensive platform that seamlessly integrates:
