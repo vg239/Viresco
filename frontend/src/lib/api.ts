@@ -9,10 +9,21 @@ const api = axios.create({
   },
 });
 
+interface QuizSubmission {
+  Set: { [key: string]: string };  // question -> answer mapping
+  chapter: string;                 // chapter title
+}
+
+interface QuizResponse {
+  Scores: { [key: string]: number };
+  Evaluation: string;
+}
+
 export const learnAPI = {
   generateCourse: async (query: string) => {
     const response = await api.post('/api/learn', { query });
     return response.data;
+
   },
 };
 
@@ -82,6 +93,11 @@ export const callAPI = {
       throw error;
     }
   }
+};
+
+export const submitQuiz = async (submission: QuizSubmission): Promise<QuizResponse> => {
+  const response = await api.post('/api/evaluate', submission);
+  return response.data;
 };
 
 export default api;

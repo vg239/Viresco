@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from ...learning_module.learn import CourseBuilder
 from pydantic import BaseModel
 from typing import Dict
@@ -35,3 +35,4 @@ async def evaluate(request: AnswerRequest):
     scores = Learner.get_scores(request.Set, request.chapter)
     summary = Learner.get_eval(request.Set, request.chapter)
     return AnswerResponse(Scores=scores, Evaluation=summary)
+
