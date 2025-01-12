@@ -777,7 +777,7 @@ function Portfolio() {
             </div>
 
             {/* Content */}
-            {anonAadhaar?.status === "logged-out" ? (
+      {anonAadhaar?.status === "logged-out" ? (
               <div className="p-8">
                 <div className="mb-6">
                   <p className="text-base text-gray-600 font-medium">{sections[currentSection].description}</p>
@@ -815,8 +815,8 @@ function Portfolio() {
                     )}
                   </div>
                 </form>
-              </div>
-            ) : (
+        </div>
+      ) : (
               <div className="p-8">
                 <motion.div
                   initial={{ opacity: 0 }}

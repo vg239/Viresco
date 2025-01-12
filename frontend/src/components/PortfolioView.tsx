@@ -3,6 +3,7 @@ import { portfolioAPI } from '../lib/api';
 import { toast } from 'react-toastify';
 import { FaChartLine, FaUniversity, FaBitcoin, FaHistory, FaChartPie } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area, BarChart, Bar, ComposedChart, Brush } from 'recharts';
 import { CarbonCreditsModal } from './CarbonCreditsModal';
 
 interface PortfolioData {
@@ -46,6 +47,133 @@ interface PortfolioData {
 }
 
 const DUMMY_WALLET = "0x1234567890abcdef";
+
+interface StockHistory {
+  [date: string]: {
+    Open: number;
+    Close: number;
+    High: number;
+    Low: number;
+  };
+}
+
+interface StockData {
+  name: string;
+  quantity: number;
+  price_bought_at: number;
+  current_price?: number;
+  history?: StockHistory;
+}
+
+const transformHistoryData = (history?: StockHistory) => {
+  if (!history) return [];
+  
+  return Object.entries(history).map(([date, data]) => ({
+    date: new Date(date).toLocaleDateString(),
+    Open: data.Open,
+    Close: data.Close,
+    High: data.High,
+    Low: data.Low,
+  }));
+};
+
+const EnhancedStockCharts = ({ history }: { history?: StockHistory }) => {
+  const data = transformHistoryData(history);
+  
+  return (
+    <div className="space-y-8">
+      {/* Price Trends Chart */}
+      <div className="bg-white p-6 rounded-xl shadow-sm">
+        <h4 className="text-lg font-semibold mb-4">Price Trends</h4>
+        <div className="h-[400px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip
+                contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '8px' }}
+                labelStyle={{ color: '#374151' }}
+              />
+              <Legend />
+              <Area
+                type="monotone"
+                dataKey="Close"
+                fill="#22c55e"
+                stroke="#22c55e"
+                fillOpacity={0.2}
+              />
+              <Line
+                type="monotone"
+                dataKey="High"
+                stroke="#3b82f6"
+                dot={false}
+                strokeWidth={2}
+              />
+              <Line
+                type="monotone"
+                dataKey="Low"
+                stroke="#ef4444"
+                dot={false}
+                strokeWidth={2}
+              />
+              <Brush dataKey="date" height={30} stroke="#22c55e" />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Trading Volume Chart */}
+      <div className="bg-white p-6 rounded-xl shadow-sm">
+        <h4 className="text-lg font-semibold mb-4">Daily Price Range</h4>
+        <div className="h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip
+                contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '8px' }}
+                labelStyle={{ color: '#374151' }}
+              />
+              <Legend />
+              <Bar dataKey="Open" fill="#f59e0b" stackId="a" />
+              <Bar dataKey="Close" fill="#3b82f6" stackId="a" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Price Statistics */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-green-50 p-4 rounded-xl">
+          <p className="text-sm text-gray-600">Highest Price</p>
+          <p className="text-lg font-semibold text-gray-800">
+            ₹{Math.max(...data.map(d => d.High)).toLocaleString()}
+          </p>
+        </div>
+        <div className="bg-red-50 p-4 rounded-xl">
+          <p className="text-sm text-gray-600">Lowest Price</p>
+          <p className="text-lg font-semibold text-gray-800">
+            ₹{Math.min(...data.map(d => d.Low)).toLocaleString()}
+          </p>
+        </div>
+        <div className="bg-blue-50 p-4 rounded-xl">
+          <p className="text-sm text-gray-600">Average Close</p>
+          <p className="text-lg font-semibold text-gray-800">
+            ₹{(data.reduce((acc, curr) => acc + curr.Close, 0) / data.length).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+          </p>
+        </div>
+        <div className="bg-yellow-50 p-4 rounded-xl">
+          <p className="text-sm text-gray-600">Price Range</p>
+          <p className="text-lg font-semibold text-gray-800">
+            ₹{(Math.max(...data.map(d => d.High)) - Math.min(...data.map(d => d.Low))).toLocaleString()}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 function PortfolioView() {
   const [portfolio, setPortfolio] = useState<PortfolioData | null>(null);
@@ -95,9 +223,10 @@ function PortfolioView() {
 
   const handleStockUpdate = async () => {
     try {
+      console.log("inside handle stock update")
       const data = await portfolioAPI.getUpdatedStocks(DUMMY_WALLET);
-      console.log(data);
-      setUpdatedStockPrices(data);
+      console.log(data.Stocks);
+      setUpdatedStockPrices(data.Stocks);
       toast.success('Stock prices updated successfully');
     } catch (error) {
       toast.error('Error updating stock prices');
@@ -290,13 +419,16 @@ function PortfolioView() {
           ))}
         </div>
         
-        {isEditing && (
+        {editingSection && (
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => {
               const emptyItem = Object.fromEntries(
-                Object.keys(sectionData[0]).map(key => [key, typeof sectionData[0][key] === 'number' ? 0 : ''])
+                Object.keys(portfolio[selectedSection as keyof PortfolioData][0]).map(key => [
+                  key, 
+                  typeof portfolio[selectedSection as keyof PortfolioData][0][key] === 'number' ? 0 : ''
+                ])
               );
               setEditData([...editData, emptyItem]);
             }}
@@ -310,7 +442,7 @@ function PortfolioView() {
   };
 
   const renderStockDetails = (item: any, index: number, isEditing: boolean) => {
-    const priceChange = updatedStockPrices?.[index]?.price_change || 0;
+    const priceChange = ((updatedStockPrices?.[index]?.current_price - item.price_bought_at)/100).toFixed(2) || 0;
     const currentPrice = updatedStockPrices?.[index]?.current_price;
     const totalValue = item.quantity * (currentPrice || item.price_bought_at);
     const profitLoss = currentPrice ? (currentPrice - item.price_bought_at) * item.quantity : 0;
@@ -396,6 +528,13 @@ function PortfolioView() {
           >
             Remove
           </motion.button>
+        )}
+
+        {!isEditing && updatedStockPrices?.[index]?.history && (
+          <div className="mt-6">
+            <h4 className="text-lg font-semibold text-gray-800 mb-4">Price Analysis</h4>
+            <EnhancedStockCharts history={updatedStockPrices?.[index]?.history} />
+          </div>
         )}
       </motion.div>
     );
@@ -545,7 +684,10 @@ function PortfolioView() {
                 whileTap={{ scale: 0.98 }}
                 onClick={() => {
                   const emptyItem = Object.fromEntries(
-                    Object.keys(portfolio[selectedSection as keyof PortfolioData][0]).map(key => [key, typeof portfolio[selectedSection as keyof PortfolioData][0][key] === 'number' ? 0 : ''])
+                    Object.keys(portfolio[selectedSection as keyof PortfolioData][0]).map(key => [
+                      key, 
+                      typeof portfolio[selectedSection as keyof PortfolioData][0][key] === 'number' ? 0 : ''
+                    ])
                   );
                   setEditData([...editData, emptyItem]);
                 }}
